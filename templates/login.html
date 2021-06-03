@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %} 登录 {% endblock %}
+{% block content %}
+
+    <div id="formBox">
+            <div class="logo_box">
+                <h3>登录<span class="iconfont">&#xec05;</span><a href="#" style="float:right;">
+                    <span class="iconfont">&#xe66b;</span>忘记密码?</a> <a href="{% url 'app:register' %}" style="float:right;">
+                    <span class="iconfont">&#xe684;</span>注册</a></h3>
+                <hr style="margin-bottom: 50px;">
+                <form action="#" name="f" method="post">
+                    <div class="input_outer">
+                        <span class="iconfont">&#xe60f;</span>
+                        <input name="logname" class="text" style="color: #FFFFFF !important" type="text"
+                               placeholder="请输入账号">
+                    </div>
+                    <div class="input_outer">
+                        <span class="iconfont">&#xe728;</span>
+                        <input name="logpass" class="text"
+                               style="color: #FFFFFF !important; position:absolute; z-index:100;" value=""
+                               type="password" placeholder="请输入密码">
+                    </div>
+                    <div class="mb2"><a class="act-but submit" href="javascript:;" style="color: #FFFFFF">登录</a></div>
+                </form>
+            </div>
+
+
+        </div>
+    {% include 'footer.html' %}
+    {% include 'randomSentence.html' %}
+
+    <style>
+    #myBlog-footer{
+        top:620px!important;
+    }
+    </style>
+
+{% endblock %}

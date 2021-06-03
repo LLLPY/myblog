@@ -1,0 +1,18 @@
+body {
+    margin: 0;
+    position: relative;
+    background-image: url("../imgs/bg.jpg");
+    background-repeat: no-repeat!important;
+     background-attachment: fixed;  /*让背景图固定*/
+    background-size: 100% 100%;
+}
+
+canvas {
+    display: block;
+}
+
+#canvas_container {
+    width: 100%;
+    height: 100vh;
+}
+
