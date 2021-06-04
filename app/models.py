@@ -78,7 +78,7 @@ class Blog(models.Model):
 
     class Meta:
         db_table='博客' #修改表名
-        ordering=('updatedTime',)
+        # ordering=('updatedTime',)
 
 
 #请求记录表

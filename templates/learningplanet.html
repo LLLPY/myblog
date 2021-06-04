@@ -363,12 +363,8 @@
                     }
                 </style>
                 <div id="main-content" class="wangEditor-txt"> {% comment %}id=""{% endcomment %}
-                    {% if safe %}
                         {{ blogContent|safe }}
-                    {% else %}
-                        {{ blogContent }}
 
-                    {% endif %}
                     {% comment %}文章内容end{% endcomment %}
 
 

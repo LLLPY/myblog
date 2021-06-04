@@ -25,12 +25,11 @@ def index(request, blogid):
         blogTitle = blogObj.title  # 文章的标题
         blogContent = blogObj.content  # 文章的内容
 
-        if blogTitle.endswith('.html'):  # 如果是html文件就不对其进行转义
-            safe = 0
-            # safe=1
-            blogContent = blogContent.replace('&nbsp;', ' ')
-        else:
-            safe = 1
+        # if blogTitle.endswith('.html'):  # 如果是html文件就不对其进行转义
+        #     safe = 0
+        #     # safe=1
+        blogContent = blogContent.replace('&nbsp;', ' ')
+        # safe = 1
         # blogTitle=blogTitle.replace('.py','').replace('.html','')
         blogCategory = blogObj.category.title  # 文章的分类
         blogTags = blogObj.tags.split('LLL')  # 文章的标签
@@ -182,8 +181,8 @@ def modifyBlog(request, blogid, authorid):
         tag2=tags[1]
         tag3=tags[2]
 
-
-
+        categoryList=Category.objects.all()
+        tagsList=['python','numpy','机器学习','人工智能','可视化','爬虫','web开发']
 
 
         return render(request, 'modifyBlog.html', context=locals())

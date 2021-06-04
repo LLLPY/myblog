@@ -149,26 +149,28 @@
     <form action="{% url 'app:modifyBlog' blogid=blogid authorid=authorid %}" method="post">
         <div id="modify-head">
             <div class="modifyClass"><span>标题</span> <input type="text" value="{{ title }}" name="title"></div>
-            <div class="modifyClass"><span>分类</span> <input type="text" list="category" value="{{ category }}" name="category"></div>
+            <div class="modifyClass"><span>分类</span> <input type="text" list="category" value="{{ category }}"
+                                                            name="category"></div>
 
-            <div class="modifyClass"><span class="modifytag">标签1<span class="iconfont">&#xe636;</span></span><input name="tag1" list="tags" type="text" value="{{ tag1 }}"></div>
-            <div class="modifyClass"><span class="modifytag">标签2<span class="iconfont">&#xe636;</span></span> <input name="tag2" list="tags" type="text" value="{{ tag2 }}"></div>
-            <div class="modifyClass"><span class="modifytag">标签3<span class="iconfont">&#xe636;</span></span> <input name="tag3" list="tags" type="text" value="{{ tag3 }}"></div>
+            <div class="modifyClass"><span class="modifytag">标签1<span class="iconfont">&#xe636;</span></span><input
+                    name="tag1" list="tags" type="text" value="{{ tag1 }}"></div>
+            <div class="modifyClass"><span class="modifytag">标签2<span class="iconfont">&#xe636;</span></span> <input
+                    name="tag2" list="tags" type="text" value="{{ tag2 }}"></div>
+            <div class="modifyClass"><span class="modifytag">标签3<span class="iconfont">&#xe636;</span></span> <input
+                    name="tag3" list="tags" type="text" value="{{ tag3 }}"></div>
             <datalist id="category">
-                <option>python学院</option>
-                <option>Java学院</option>
-                <option>PHP学院</option>
-                <option>C语言学院</option>
-                <option>c++学院</option>
-                <option>前端学院</option>
+                {% for categoryObj in categoryList %}
+                    <option>categoryObj.title</option>
+
+                {% endfor %}
+
             </datalist>
             <datalist id="tags">
-                <option>python学院</option>
-                <option>Java学院</option>
-                <option>PHP学院</option>
-                <option>C语言学院</option>
-                <option>c++学院</option>
-                <option>前端学院</option>
+                {% for tag in tagsList %}
+                    <option>tag</option>
+
+                {% endfor %}
+
             </datalist>
             <button type="submit" id="submit">发&nbsp;&nbsp;布</button>
         </div>
@@ -182,24 +184,26 @@
     <script type="text/javascript" src="{% static 'js/wangEditor1.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/wangEditor2.js' %}"></script>
     <script type="text/javascript">
-        // 阻止输出log
-        // wangEditor.config.printLog = false;
+
+        {% comment %}初始化富文本框{% endcomment %}
         var editor = new wangEditor('editor-trigger');
-        // 上传图片
-        editor.config.uploadImgUrl = '/upload';
         editor.create();
+
         let submitDiv = document.getElementById('submit');
 
         function addContent() {
-            let contentDiv=document.getElementById('editor-trigger');
-            content=contentDiv.innerHTML;
-            let newInput=document.createElement('input');
-            newInput.name='content';
-            newInput.value=content;
+            let contentDiv = document.getElementById('editor-trigger');
+            content = contentDiv.innerHTML;
+            let newInput = document.createElement('input');
+            newInput.name = 'content';
+            newInput.value = content;
             submitDiv.parentNode.appendChild(newInput);
+
+
+
         }
 
-        submitDiv.addEventListener('click',addContent);
+        submitDiv.addEventListener('click', addContent);
 
 
     </script>

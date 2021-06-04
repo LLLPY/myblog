@@ -2900,9 +2900,6 @@ _e(function (E, $) {
         cancel: '取消',
         unlink: '取消链接',
         table: '表格',
-        emotion: '表情',
-        img: '图片',
-        video: '视频',
         'width': '宽度',
         'height': '高度',
         location: '位置',
@@ -2942,9 +2939,6 @@ _e(function (E, $) {
         cancel: 'Cancel',
         unlink: 'Unlink',
         table: 'Table',
-        emotion: 'Emotions',
-        img: 'Image',
-        video: 'Video',
         'width': 'width',
         'height': 'height',
         location: 'Location',
@@ -3007,10 +3001,7 @@ _e(function (E, $) {
         'link',
         'unlink',
         'table',
-        // 'emotion',
         '|',
-        'img',
-        'video',
         'location',
         'insertcode',
         '|',
@@ -3060,77 +3051,7 @@ _e(function (E, $) {
         7: '28px'
     };
 
-    // 琛ㄦ儏鍖?
-    E.config.emotions = {
-        'default': {
-            title: '榛樿',
-            size: 18,
-            imgs: [
-                '../static/emotions/default/1.gif',
-                '../static/emotions/default/2.gif',
-                '../static/emotions/default/3.gif',
-                '../static/emotions/default/4.gif',
-                '../static/emotions/default/5.gif',
-                '../static/emotions/default/6.gif',
-                '../static/emotions/default/7.gif',
-                '../static/emotions/default/8.gif',
-                '../static/emotions/default/9.gif',
-                '../static/emotions/default/10.gif',
-                '../static/emotions/default/11.gif',
-                '../static/emotions/default/12.gif',
-                '../static/emotions/default/13.gif',
-                '../static/emotions/default/14.gif',
-                '../static/emotions/default/15.gif',
-                '../static/emotions/default/16.gif',
-                '../static/emotions/default/17.gif',
-                '../static/emotions/default/18.gif',
-                '../static/emotions/default/19.gif',
-                '../static/emotions/default/20.gif',
-                '../static/emotions/default/21.gif',
-                '../static/emotions/default/22.gif',
-                '../static/emotions/default/23.gif',
-                '../static/emotions/default/24.gif',
-                '../static/emotions/default/25.gif',
-                '../static/emotions/default/26.gif',
-                '../static/emotions/default/27.gif',
-                '../static/emotions/default/28.gif',
-                '../static/emotions/default/29.gif',
-                '../static/emotions/default/30.gif',
-                '../static/emotions/default/31.gif',
-                '../static/emotions/default/32.gif',
-                '../static/emotions/default/33.gif',
-                '../static/emotions/default/34.gif',
-                '../static/emotions/default/35.gif',
-                '../static/emotions/default/36.gif',
-                '../static/emotions/default/37.gif',
-                '../static/emotions/default/38.gif',
-                '../static/emotions/default/39.gif',
-                '../static/emotions/default/40.gif',
-                '../static/emotions/default/41.gif',
-                '../static/emotions/default/42.gif',
-                '../static/emotions/default/43.gif',
-                '../static/emotions/default/44.gif',
-                '../static/emotions/default/45.gif',
-                '../static/emotions/default/46.gif',
-                '../static/emotions/default/47.gif',
-                '../static/emotions/default/48.gif',
-                '../static/emotions/default/49.gif',
-                '../static/emotions/default/50.gif'
-            ]
-        },
-        'jinxing': {
-            title: '閲戞槦',
-            size: 50,
-            imgs: [
-                '../static/emotions/jinxing/1.gif',
-                '../static/emotions/jinxing/2.gif',
-                '../static/emotions/jinxing/3.gif',
-                '../static/emotions/jinxing/4.gif',
-                '../static/emotions/jinxing/5.gif',
-                '../static/emotions/jinxing/6.gif'
-            ]
-        }
-    };
+
 
     // 鐧惧害鍦板浘鐨刱ey
     E.config.mapAk = 'TVhjYjq1ICT2qqL5LdS8mwas';
@@ -4758,406 +4679,7 @@ _e(function (E, $) {
     });
 
 });
-// emotion 鑿滃崟
-_e(function (E, $) {
 
-    E.createMenu(function (check) {
-        var menuId = 'emotion';
-        if (!check(menuId)) {
-            return;
-        }
-        var editor = this;
-        var lang = editor.config.lang;
-        var configEmotions = editor.config.emotions;
-
-        // 鍒涘缓 menu 瀵硅薄
-        var menu = new E.Menu({
-            editor: editor,
-            id: menuId,
-            title: lang.emotion
-        });
-
-        // 鎷兼帴 dropPanel 鍐呭
-        var $panelContent = $('<div class="panel-tab"></div>');
-        var $tabContainer = $('<div class="tab-container"></div>');
-        var $contentContainer = $('<div class="content-container"></div>');
-        $.each(configEmotions, function (k, val) {
-            var title = val.title;
-            var size = val.size;
-            var imgs = val.imgs;
-
-            var $tab = $('<a href="#">' + title +' </a>');
-            $tabContainer.append($tab);
-            var $tabContent = $('<div class="content"></div>');
-            $contentContainer.append($tabContent);
-
-            // 娣诲姞琛ㄦ儏鍥剧墖
-            $.each(imgs, function (k, src) {
-                var $command = $('<a href="#" commandValue="' + src + '"></a>');
-                var $img = $('<img>');
-                $img.css({
-                    width: size + 'px',
-                    height: size + 'px'
-                });
-                $img.attr('_src', src);  // 鍏堝皢 src 澶嶅埗鍒? '_src' 灞炴€э紝鍏堜笉鍔犺浇
-
-                $command.append($img);
-                $tabContent.append($command);
-            });
-
-            // tab 鍒囨崲浜嬩欢
-            $tab.click(function (e) {
-                $tabContainer.children().removeClass('selected');
-                $contentContainer.children().removeClass('selected');
-                $tabContent.addClass('selected');
-                $tab.addClass('selected');
-                e.preventDefault();
-            });
-        });
-        $panelContent.append($tabContainer).append($contentContainer);
-
-        // 榛樿鏄剧ず绗竴涓猼ab
-        $tabContainer.children().first().addClass('selected');
-        $contentContainer.children().first().addClass('selected');
-
-        // 鎻掑叆琛ㄦ儏command浜嬩欢
-        $contentContainer.on('click', 'a[commandValue]', function (e) {
-            var $a = $(e.currentTarget);
-            var src = $a.attr('commandValue');
-
-            editor.command(e, 'InsertImage', src);
-        });
-
-        // 娣诲姞panel
-        menu.dropPanel = new E.DropPanel(editor, menu, {
-            $content: $panelContent,
-            width: 350
-        });
-
-        // 瀹氫箟click浜嬩欢锛堝紓姝ュ姞杞借〃鎯呭浘鐗囷級
-        menu.clickEvent = function (e) {
-            var menu = this;
-            var dropPanel = menu.dropPanel;
-
-            // -------------闅愯棌-------------
-            if (dropPanel.isShowing) {
-                dropPanel.hide();
-                return;
-            }
-
-            // -------------鏄剧ず-------------
-            dropPanel.show();
-
-            // 寮傛鍔犺浇鍥剧墖
-            if (menu.imgLoaded) {
-                return;
-            }
-            $contentContainer.find('img').each(function () {
-                var $img = $(this);
-                var _src = $img.attr('_src');
-                $img.on('error', function () {
-                    E.error('鍔犺浇涓嶅嚭琛ㄦ儏鍥剧墖 ' + _src);
-                });
-                $img.attr('src', _src);
-                $img.removeAttr('_src');
-            });
-            menu.imgLoaded = true;
-        };
-
-        // 澧炲姞鍒癳ditor瀵硅薄涓?
-        editor.menus[menuId] = menu;
-    });
-
-});
-// img 鑿滃崟
-_e(function (E, $) {
-
-    E.createMenu(function (check) {
-        var menuId = 'img';
-        if (!check(menuId)) {
-            return;
-        }
-        var editor = this;
-        var lang = editor.config.lang;
-
-        // 鍒涘缓 menu 瀵硅薄
-        var menu = new E.Menu({
-            editor: editor,
-            id: menuId,
-            title: lang.img
-        });
-
-        // 鍒涘缓 panel content
-        var $panelContent = $('<div class="panel-tab"></div>');
-        var $tabContainer = $('<div class="tab-container"></div>');
-        var $contentContainer = $('<div class="content-container"></div>');
-        $panelContent.append($tabContainer).append($contentContainer);
-
-        // tab
-        var $uploadTab = $('<a href="#">上传图片</a>');
-        var $linkTab = $('<a href="#">网络图片</a>');
-        $tabContainer.append($uploadTab).append($linkTab);
-
-        // 涓婁紶鍥剧墖 content
-        var $uploadContent = $('<div class="content"></div>');
-        $contentContainer.append($uploadContent);
-
-        // 缃戠粶鍥剧墖 content
-        var $linkContent = $('<div class="content"></div>');
-        $contentContainer.append($linkContent);
-        linkContentHandler(editor, menu, $linkContent);
-
-        // 娣诲姞panel
-        menu.dropPanel = new E.DropPanel(editor, menu, {
-            $content: $panelContent,
-            width: 400,
-            onRender: function () {
-                // 娓叉煋鍚庣殑鍥炶皟浜嬩欢锛岀敤浜庢墽琛岃嚜瀹氫箟涓婁紶鐨刬nit
-                // 鍥犱负娓叉煋涔嬪悗锛屼笂浼犻潰鏉跨殑dom鎵嶄細琚覆鏌撳埌椤甸潰锛屾墠鑳借绗笁鏂圭┖闂磋幏鍙栧埌
-                var init = editor.config.customUploadInit;
-                init && init.call(editor);
-            }
-        });
-
-        // 澧炲姞鍒癳ditor瀵硅薄涓?
-        editor.menus[menuId] = menu;
-
-        // tab 鍒囨崲浜嬩欢
-        function tabToggle() {
-            $uploadTab.click(function (e) {
-                $tabContainer.children().removeClass('selected');
-                $contentContainer.children().removeClass('selected');
-                $uploadContent.addClass('selected');
-                $uploadTab.addClass('selected');
-                e.preventDefault();
-            });
-            $linkTab.click(function (e) {
-                $tabContainer.children().removeClass('selected');
-                $contentContainer.children().removeClass('selected');
-                $linkContent.addClass('selected');
-                $linkTab.addClass('selected');
-                e.preventDefault();
-
-                // focus input
-                if (E.placeholder) {
-                    $linkContent.find('input[type=text]').focus();
-                }
-            });
-
-            // 榛樿鎯呭喌
-            // $uploadTab.addClass('selected');
-            // $uploadContent.addClass('selected');
-            $uploadTab.click();
-        }
-
-        // 闅愯棌涓婁紶鍥剧墖
-        function hideUploadImg() {
-            $tabContainer.remove();
-            $uploadContent.remove();
-            $linkContent.addClass('selected');
-        }
-
-        // 鍒ゆ柇鐢ㄦ埛鏄惁閰嶇疆浜嗕笂浼犲浘鐗?
-        editor.ready(function () {
-            var editor = this;
-            var config = editor.config;
-            var uploadImgUrl = config.uploadImgUrl;
-            var customUpload = config.customUpload;
-            var $uploadImgPanel;
-
-            if (uploadImgUrl || customUpload) {
-                // 绗竴锛屾毚闇插嚭 $uploadContent 浠ヤ究鐢ㄦ埛鑷畾涔? 锛侊紒锛侀噸瑕?
-                editor.$uploadContent = $uploadContent;
-
-                // 绗簩锛岀粦瀹歵ab鍒囨崲浜嬩欢
-                tabToggle();
-            } else {
-                // 鏈厤缃笂浼犲浘鐗囧姛鑳?
-                hideUploadImg();
-            }
-
-            // 鐐瑰嚮 $uploadContent 绔嬪嵆闅愯棌 dropPanel
-            // 涓轰簡鍏煎IE8銆?9鐨勪笂浼狅紝鍥犱负IE8銆?9浣跨敤 modal 涓婁紶
-            // 杩欓噷浣跨敤寮傛锛屼负浜嗕笉濡ㄧ楂樼骇娴忚鍣ㄩ€氳繃鐐瑰嚮 $uploadContent 閫夋嫨鏂囦欢
-            function hidePanel() {
-                menu.dropPanel.hide();
-            }
-            $uploadContent.click(function () {
-                setTimeout(hidePanel);
-            });
-        });
-    });
-
-    // --------------- 澶勭悊缃戠粶鍥剧墖content ---------------
-    function linkContentHandler (editor, menu, $linkContent) {
-        var lang = editor.config.lang;
-        var $urlContainer = $('<div style="margin:20px 10px 10px 10px;"></div>');
-        var $urlInput = $('<input type="text" class="block" placeholder="http://"/>');
-        $urlContainer.append($urlInput);
-        var $btnSubmit = $('<button class="right">' + lang.submit + '</button>');
-        var $btnCancel = $('<button class="right gray">' + lang.cancel + '</button>');
-
-        $linkContent.append($urlContainer).append($btnSubmit).append($btnCancel);
-
-        // 鍙栨秷
-        $btnCancel.click(function (e) {
-            e.preventDefault();
-            menu.dropPanel.hide();
-        });
-
-        // callback
-        function callback() {
-            $urlInput.val('');
-        }
-
-        // 纭畾
-        $btnSubmit.click(function (e) {
-            e.preventDefault();
-            var url = $.trim($urlInput.val());
-            if (!url) {
-                // 鏃犲唴瀹?
-                $urlInput.focus();
-                return;
-            }
-
-            var imgHtml = '<img style="max-width:100%;" src="' + url + '"/>';
-            editor.command(e, 'insertHtml', imgHtml, callback);
-        });
-    }
-
-});
-// video 鑿滃崟
-_e(function (E, $) {
-
-    E.createMenu(function (check) {
-        var menuId = 'video';
-        if (!check(menuId)) {
-            return;
-        }
-        var editor = this;
-        var lang = editor.config.lang;
-        var reg = /^\s*(http:\/\/|https:\/\/).+(\.swf|\.ogg|\.mp4|\.webm)/i;
-
-        // 鍒涘缓 menu 瀵硅薄
-        var menu = new E.Menu({
-            editor: editor,
-            id: menuId,
-            title: lang.video,
-            commandName: 'unLink'
-        });
-
-        // 瑙嗛浠ｇ爜妯℃澘 - flash
-        var videoTplFlash = [
-            '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" ',
-            '        codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=7,0,0,0" ',
-            '        width="#{width}" ',
-            '        height="#{height}" >',
-            '   <param name="movie" ',
-            '          value="#{videoUrl}" />',
-            '   <param name="allowFullScreen" value="true" />',
-            '   <param name="allowScriptAccess" value="always" />',
-            '   <param value="transparent" name="wmode" />',
-            '   <embed src="#{videoUrl}"',
-            '          width="#{width}" ',
-            '          height="#{height}" ',
-            '          name="cc_8E6888CDEA7087C49C33DC5901307461" ',
-            '          allowFullScreen="true" ',
-            '          wmode="transparent" ',
-            '          allowScriptAccess="always" ',
-            '          pluginspage="http://www.macromedia.com/go/getflashplayer" ',
-            '          type="application/x-shockwave-flash"/>',
-            '</object>',
-            '<p><br></p>'
-        ].join('');
-
-        // 瑙嗛浠ｇ爜妯℃澘 - h5
-        var videoTplH5 = [
-            '<video src="#{videoUrl}" controls="controls" width="#{width}" height="#{height}">',
-            '</video>',
-            '<p><br></p>'
-        ].join('');
-
-        // 鍒涘缓 panel 鍐呭
-        var $content = $('<div></div>');
-        var $urlInputContainer = $('<div style="margin:20px 10px;"></div>');
-        var $urlInput = $('<input type="text" class="block" placeholder="*.swf, *.mp4, *.ogg, *.webm"/>');
-        $urlInputContainer.append($urlInput);
-        var $sizeContainer = $('<div style="margin:20px 10px;"></div>');
-        var $widthInput = $('<input type="text" value="480" style="width:50px;text-align:center;"/>');
-        var $heightInput = $('<input type="text" value="360" style="width:50px;text-align:center;"/>');
-        $sizeContainer.append('<span> ' + lang.width + ' </span>')
-                      .append($widthInput)
-                      .append('<span> px &nbsp;&nbsp;&nbsp;</span>')
-                      .append('<span> ' + lang.height + ' </span>')
-                      .append($heightInput)
-                      .append('<span> px </span>');
-        var $btnContainer = $('<div></div>');
-        var $btnSubmit = $('<button class="right">' + lang.submit + '</button>');
-        var $btnCancel = $('<button class="right gray">' + lang.cancel + '</button>');
-        $btnContainer.append($btnSubmit).append($btnCancel);
-        $content.append($urlInputContainer).append($sizeContainer).append($btnContainer);
-
-        // 鍙栨秷鎸夐挳
-        $btnCancel.click(function (e) {
-            e.preventDefault();
-            $urlInput.val('');
-            menu.dropPanel.hide();
-        });
-
-        // 纭畾鎸夐挳
-        $btnSubmit.click(function (e) {
-            e.preventDefault();
-            var url = $.trim($urlInput.val());
-            var width = parseInt($widthInput.val());
-            var height = parseInt($heightInput.val());
-            var html;
-
-            // 楠岃瘉鏁版嵁
-            if (!url) {
-                menu.dropPanel.focusFirstInput();
-                return;
-            }
-
-            if (!reg.test(url)) {
-                alert('瑙嗛閾炬帴鏍煎紡閿欒锛?');
-                menu.dropPanel.focusFirstInput();
-                return;
-            }
-
-            if (isNaN(width) || isNaN(height)) {
-                alert('瀹藉害鎴栭珮搴︿笉鏄暟瀛楋紒');
-                return;
-            }
-
-            // 鎷兼帴 video 浠ｇ爜
-            if ((/.swf/i).test(url)) {
-                // swf 鏍煎紡
-                html = videoTplFlash.replace(/#{videoUrl}/ig, url)
-                                    .replace(/#{width}/ig, width)
-                                    .replace(/#{height}/ig, height);
-            } else {
-                // 鍏朵粬鏍煎紡锛屽ogg mp4 webm
-                html = videoTplH5.replace(/#{videoUrl}/ig, url)
-                                 .replace(/#{width}/ig, width)
-                                 .replace(/#{height}/ig, height);
-            }
-
-            // 鎵ц鍛戒护
-            editor.command(e, 'insertHtml', html);
-            $urlInput.val('');
-        });
-
-        // 鍒涘缓panel
-        menu.dropPanel = new E.DropPanel(editor, menu, {
-            $content: $content,
-            width: 400
-        });
-
-        // 澧炲姞鍒癳ditor瀵硅薄涓?
-        editor.menus[menuId] = menu;
-    });
-
-});
 // location 鑿滃崟
 _e(function (E, $) {
 
@@ -5548,6 +5070,7 @@ _e(function (E, $) {
     });
 
 });
+
 // insertcode 鑿滃崟
 _e(function (E, $) {
 
@@ -5825,6 +5348,7 @@ _e(function (E, $) {
     });
 
 });
+
 // undo 鑿滃崟
 _e(function (E, $) {
 
@@ -5891,6 +5415,7 @@ _e(function (E, $) {
     });
 
 });
+
 // redo 鑿滃崟
 _e(function (E, $) {
 
@@ -5919,6 +5444,7 @@ _e(function (E, $) {
     });
 
 });
+
 // 鍏ㄥ睆 鑿滃崟
 _e(function (E, $) {
 
@@ -6035,6 +5561,7 @@ _e(function (E, $) {
     });
 
 });
+
 // 娓叉煋menus
 _e(function (E, $) {
 
@@ -6061,6 +5588,7 @@ _e(function (E, $) {
     };
 
 });
+
 // 娓叉煋menus
 _e(function (E, $) {
 
@@ -7446,25 +6974,7 @@ _e(function (E, $) {
             editor.enableMenusExcept();
         }
 
-        // 鍒ゆ柇img鏄惁鏄竴涓〃鎯?
-        var emotionConfig = editor.config.emotions;
-        function isEmotion(imgSrc) {
-            var result = false;
-            $.each(emotionConfig, function (k, conf) {
-                var flag = false;
-                $.each(conf.imgs, function (idx, val) {
-                    if (imgSrc === val) {
-                        result = true;
-                        flag = true;
-                        return false;
-                    }
-                });
-                if (flag) {
-                    return false;
-                }
-            });
-            return result;
-        }
+
 
         // click img 浜嬩欢
         $txt.on('mousedown', 'img', function (e) {
@@ -7782,7 +7292,6 @@ _e(function (E, $) {
 _e(function (E, $) {
     E.info('鏈〉闈㈠瘜鏂囨湰缂栬緫鍣ㄧ敱 wangEditor 鎻愪緵 http://wangeditor.github.io/ ');
 });
-
     // 鏈€缁堣繑鍥瀢angEditor鏋勯€犲嚱鏁?
     return window.wangEditor;
 });
