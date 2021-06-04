@@ -1,10 +1,13 @@
 from random import choices, randint
 from django.http import JsonResponse
 from django.shortcuts import render
+from django.views.decorators.cache import cache_page
+
 from app.models import Blog, User
 from learningPlanet.models import JudgeTable
 
 # 学习星球的主页
+@cache_page(timeout=60, cache='default')  # timeout指定缓存过期时间,cache指定缓存用的数据库，
 def index(request, blogid):
 
     if request.method == 'GET':
@@ -22,7 +25,8 @@ def index(request, blogid):
 
         if blogTitle.endswith('.html'): #如果是html文件就不对其进行转义
             safe=0
-            blogContent=blogContent.replace('&nbsp;',' ')#.replace('<','《》').replace('>','')
+            # safe=1
+            blogContent=blogContent.replace('&nbsp;',' ').replace('<','《').replace('>','》')
         else:safe=1
         # blogTitle=blogTitle.replace('.py','').replace('.html','')
         blogCategory = blogObj.category.title  # 文章的分类
@@ -75,7 +79,6 @@ def deleteJudgeList(request):
 
     if request.method=='POST':
         judgeId=request.POST.get('judgeId')
-        print(judgeId)
         try:
             judgeObj=JudgeTable.objects.filter(id=judgeId).first()
             judgeObj.isShow=False
@@ -90,21 +93,21 @@ def addJudgeList(request):
 
     if request.method=='POST':
 
-        # try:
+        try:
             judgerId=request.POST.get('judgerId') #评论人的id
             blogId=request.POST.get('blogId') #评论人的id
             content=request.POST.get('content') #评论的内容
             date=request.POST.get('date') #评论的日期
 
             judgeObj=JudgeTable()
-            judgeObj.judger=User.objects.filter(id=judgerId).first()
-            judgeObj.judgeBlog=Blog.objects.filter(id=blogId).first()
+            judgeObj.judger_id=judgerId
+            judgeObj.judgeBlog_id=blogId
             judgeObj.content=content
             judgeObj.judgeTime=date
             judgeObj.save()
             return JsonResponse({'judgeId': judgeObj.id}) #增加成功就返回该评论的id
-        # except:
-        #     return JsonResponse({'msg': '评论失败!'})
+        except:
+            return JsonResponse({'msg': '评论失败!'})
 
 
 #点赞功能
@@ -124,6 +127,7 @@ def doCall(request):
             return JsonResponse({'msg':'点赞失败!'})
 
 
+#博客编辑
 def modifyBlog(request,blogid,authorid):
 
     if request.method=='GET':

@@ -1,3 +1,4 @@
+import re
 import time
 from django.core.cache import cache
 from django.http import HttpResponse
@@ -17,12 +18,13 @@ from app.models import RequestLogTable
 '''
 
 
+
 class LearnMiddleWare(MiddlewareMixin):
     def process_request(self, request):
-        print(request.META)
         requestPath=request.path
         ip = request.META.get('REMOTE_ADDR')  # 客户端的ip地址
-        if requestPath !='/undefined' and 'static/' not in requestPath:
+        b = re.search(r'favicon.ico|static|undefined', requestPath) #静态文件的请求不需要记录
+        if not b:
             HTTP_USER_AGENT = request.META['HTTP_USER_AGENT']  # 请求头
 
             try:

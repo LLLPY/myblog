@@ -15,7 +15,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
@@ -27,7 +26,6 @@ DEBUG = False
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
 
 # Application definition
 
@@ -50,7 +48,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'middleware.MiddelWare.LearnMiddleWare' #自己定义的中间件
+    'middleware.MiddelWare.LearnMiddleWare'  # 自己定义的中间件
 
 ]
 
@@ -75,32 +73,29 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'MyBlog.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME':'myblog',
-        'HOST':'121.199.23.213',
-        'PORT':'3306',
-        'USER':"LLL",
-        "PASSWORD":"LVLL0318"
+        'NAME': 'myblog',
+        'HOST': '121.199.23.213',
+        'PORT': '3306',
+        'USER': "LLL",
+        "PASSWORD": "LVLL0318"
     },
 
-'default2': {
+    'default2': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME':'myblog',
-        'HOST':'localhost',
-        'PORT':'3306',
-        'USER':"root",
-        "PASSWORD":"123456"
+        'NAME': 'myblog',
+        'HOST': 'localhost',
+        'PORT': '3306',
+        'USER': "root",
+        "PASSWORD": "123456"
     }
 
-
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -120,7 +115,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
@@ -134,21 +128,19 @@ USE_L10N = True
 
 USE_TZ = False
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
 
-
-#静态文件的路径
-STATICFILES_DIRS=[
-    os.path.join(BASE_DIR,'static'),
+# 静态文件的路径
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
 ]
 
-STATIC_ROOT =os.path.join( BASE_DIR, '/static/' )
+STATIC_ROOT = os.path.join(BASE_DIR, '/static/')
 
-#配置日志器
+# 配置日志器
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,  # 是否禁用已经存在的日志器
@@ -197,12 +189,11 @@ LOGGING = {
 
 }
 
-
 # mysql数据库做缓存
 # 缓存的使用
 # 1.首先创建一个缓存表: python manage.py createcachetable 表名
 
-# redis的配置(缓存的使用)
+# 2.redis的配置(缓存的使用)
 CACHES = {
     'default': {  # 默认
         "BACKEND": 'django_redis.cache.RedisCache',
@@ -224,15 +215,7 @@ CACHES = {
         'TIMEOUT': 60 * 5,
     }
 
-
 }
 
-
-#替换系统的User 来使用我们自己定义的User
-AUTH_USER_MODEL='app.User' #子应用名.模型类名
-
-
-
-
-
-
+# 替换系统的User 来使用我们自己定义的User
+AUTH_USER_MODEL = 'app.User'  # 子应用名.模型类名

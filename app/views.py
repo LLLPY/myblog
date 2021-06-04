@@ -92,6 +92,7 @@ def str_to_timestamp(str_time=None, format='%Y-%m-%d %H:%M:%S'):
 #     return otherStyleTime
 
 #博客首页
+# @cache_page(timeout=60, cache='default')  # timeout指定缓存过期时间,cache指定缓存用的数据库
 def index(request):
 
     author='LLL'

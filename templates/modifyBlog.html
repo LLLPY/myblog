@@ -4,65 +4,29 @@
 {% block title %}博客修改{% endblock %}
 {% block content %}
 
-    <style>
 
-        figure.image {
-            display: inline-block;
-            border: 1px solid gray;
-            margin: 0 2px 0 1px;
-            background: #f5f2f0;
+
+        <div id="editor-trigger">
+            {{ content|safe }}
+        </div>
+
+        <link rel="stylesheet" type="text/css" href="{% static 'css/wangEditor.css' %}">
+        <style type="text/css">
+        #editor-trigger {
+            height: 300px;
+            max-height: 500px;
         }
-
-        figure.align-left {
-            float: left;
-        }
-
-        figure.align-right {
-            float: right;
-        }
-
-        figure.image img {
-            margin: 8px 8px 0 8px;
-        }
-
-        figure.image figcaption {
-            margin: 6px 8px 6px 8px;
-            text-align: center;
-        }
-
-
-        /*
-         Alignment using classes rather than inline styles
-         check out the "formats" option
-        */
-
-        img.align-left {
-            float: left;
-        }
-
-        img.align-right {
-            float: right;
-        }
-
-        /* Basic styles for Table of Contents plugin (toc) */
-        .mce-toc {
-            border: 1px solid gray;
-        }
-
-        .mce-toc h2 {
-            margin: 4px;
-        }
-
-        .mce-toc li {
-            list-style-type: none;
-        }
-
-
     </style>
-    <script src="{% static 'js/tinymce.js' %}"></script>
-    <form action="#">
-<textarea id="full-featured-non-premium">{{ content }}</textarea>
-    </form>
+    <script type="text/javascript" src="{% static 'js/wangEditor1.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/wangEditor2.js' %}"></script>
+    <script type="text/javascript">
+        // 阻止输出log
+        // wangEditor.config.printLog = false;
+        var editor = new wangEditor('editor-trigger');
+        // 上传图片
+        editor.config.uploadImgUrl = '/upload';
+        editor.create();
+    </script>
 
 
 
