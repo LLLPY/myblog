@@ -1,21 +1,23 @@
 from random import choices, randint
-from django.http import JsonResponse
-from django.shortcuts import render
+from time import localtime, strftime, time
+from django.db.models import Q
+from django.http import JsonResponse, HttpResponse
+from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.views.decorators.cache import cache_page
 
-from app.models import Blog, User
+from app.models import Blog, User, SearchTable, Category
 from learningPlanet.models import JudgeTable
 
-# 学习星球的主页
-@cache_page(timeout=60, cache='default')  # timeout指定缓存过期时间,cache指定缓存用的数据库，
-def index(request, blogid):
 
+# 学习星球的主页
+# @cache_page(timeout=60, cache='default')  # timeout指定缓存过期时间,cache指定缓存用的数据库，
+def index(request, blogid):
     if request.method == 'GET':
         learningPlanet = 1  # 如果是学习星球 头部就显示快乐星球
         blogObj = Blog.objects.filter(id=blogid).first()
         blogObj.total_views += 1
-        blogObj.save()  #浏览量加一
-
+        blogObj.save()  # 浏览量加一
 
         authorName = blogObj.author.username  # 作者名称
         authorAvator = blogObj.author.avatar  # 作者头像
@@ -23,29 +25,32 @@ def index(request, blogid):
         blogTitle = blogObj.title  # 文章的标题
         blogContent = blogObj.content  # 文章的内容
 
-        if blogTitle.endswith('.html'): #如果是html文件就不对其进行转义
-            safe=0
+        if blogTitle.endswith('.html'):  # 如果是html文件就不对其进行转义
+            safe = 0
             # safe=1
-            blogContent=blogContent.replace('&nbsp;',' ').replace('<','《').replace('>','》')
-        else:safe=1
+            blogContent = blogContent.replace('&nbsp;', ' ')
+        else:
+            safe = 1
         # blogTitle=blogTitle.replace('.py','').replace('.html','')
         blogCategory = blogObj.category.title  # 文章的分类
-        blogTags = blogObj.tags  # 文章的标签
+        blogTags = blogObj.tags.split('LLL')  # 文章的标签
+
+
         blogTotalViews = blogObj.total_views  # 文章的浏览量
         blogTotalLikes = blogObj.total_likes  # 文章的获赞量
         blogCreatedTime = blogObj.createdTime  # 文章的发布时间
         blogUpdatedTime = blogObj.updatedTime  # 文章的更新时间
-        preBlogId=int(blogid)-1 #前一篇文章的id
-        if preBlogId<=1:
-            preBlogId=1
-        nextBlogId=int(blogid)+1 #后一篇文章的id
-        blogSumNum=Blog.objects.all().count() #文章的总数
-        if nextBlogId>=blogSumNum:
-            nextBlogId=blogSumNum
+        preBlogId = int(blogid) - 1  # 前一篇文章的id
+        if preBlogId <= 1:
+            preBlogId = 1
+        nextBlogId = int(blogid) + 1  # 后一篇文章的id
+        blogSumNum = Blog.objects.all().count()  # 文章的总数
+        if nextBlogId >= blogSumNum:
+            nextBlogId = blogSumNum
 
-        #相关推荐部分 推荐同一类别下的内容
+        # 相关推荐部分 推荐同一类别下的内容
         blogCategory = blogObj.category  # 文章的分类
-        recommendBlogList=choices(Blog.objects.filter(category=blogCategory),k=5)
+        recommendBlogList = choices(Blog.objects.filter(category=blogCategory), k=5)
         return render(request, 'learningplanet.html', context=locals())
     if request.method == 'POST':
         return JsonResponse({'msg': 'hello world~'})
@@ -53,86 +58,159 @@ def index(request, blogid):
 
 # 返回评论信息列表
 def returnJudgeList(request):
-    if request.method=='POST':
+    if request.method == 'POST':
 
-        #被评论的博客的id
-        blogId=request.POST.get('blogId')
-        #找到博客实例对象
-        blogObj=Blog.objects.filter(id=blogId).first()
-        resultList=[]
-        judgeList=JudgeTable.objects.filter(judgeBlog=blogObj)
+        # 被评论的博客的id
+        blogId = request.POST.get('blogId')
+        # 找到博客实例对象
+        blogObj = Blog.objects.filter(id=blogId).first()
+        resultList = []
+        judgeList = JudgeTable.objects.filter(judgeBlog=blogObj)
         if judgeList:
             for judgeObj in judgeList:
-                if judgeObj.isShow: #如果是可展示的就添加到评论列表中
-                    conDic={
-                        'name':judgeObj.judger.username, #评论人的名称
-                        'avatar':str(judgeObj.judger.avatar), #评论人的头像地址
-                        'date':str(judgeObj.judgeTime), #评论的日期
-                        'content':judgeObj.content, #评论的内容
-                        'id':judgeObj.id #评论的id
+                if judgeObj.isShow:  # 如果是可展示的就添加到评论列表中
+                    conDic = {
+                        'name': judgeObj.judger.username,  # 评论人的名称
+                        'avatar': str(judgeObj.judger.avatar),  # 评论人的头像地址
+                        'date': str(judgeObj.judgeTime),  # 评论的日期
+                        'content': judgeObj.content,  # 评论的内容
+                        'id': judgeObj.id  # 评论的id
                     }
                     resultList.append(conDic)
-        return JsonResponse({'judgeList':resultList})
+        return JsonResponse({'judgeList': resultList})
 
-#删除评论
+
+# 删除评论
 def deleteJudgeList(request):
-
-    if request.method=='POST':
-        judgeId=request.POST.get('judgeId')
+    if request.method == 'POST':
+        judgeId = request.POST.get('judgeId')
         try:
-            judgeObj=JudgeTable.objects.filter(id=judgeId).first()
-            judgeObj.isShow=False
+            judgeObj = JudgeTable.objects.filter(id=judgeId).first()
+            judgeObj.isShow = False
             judgeObj.save()
 
-            return JsonResponse({'msg':'删除成功!'})
+            return JsonResponse({'msg': '删除成功!'})
         except:
-            return JsonResponse({'msg':'删除失败!'})
+            return JsonResponse({'msg': '删除失败!'})
 
-#增加评论信息
+
+# 增加评论信息
 def addJudgeList(request):
-
-    if request.method=='POST':
+    if request.method == 'POST':
 
         try:
-            judgerId=request.POST.get('judgerId') #评论人的id
-            blogId=request.POST.get('blogId') #评论人的id
-            content=request.POST.get('content') #评论的内容
-            date=request.POST.get('date') #评论的日期
+            judgerId = request.POST.get('judgerId')  # 评论人的id
+            blogId = request.POST.get('blogId')  # 评论人的id
+            content = request.POST.get('content')  # 评论的内容
+            date = request.POST.get('date')  # 评论的日期
 
-            judgeObj=JudgeTable()
-            judgeObj.judger_id=judgerId
-            judgeObj.judgeBlog_id=blogId
-            judgeObj.content=content
-            judgeObj.judgeTime=date
+            judgeObj = JudgeTable()
+            judgeObj.judger_id = judgerId
+            judgeObj.judgeBlog_id = blogId
+            judgeObj.content = content
+            judgeObj.judgeTime = date
             judgeObj.save()
-            return JsonResponse({'judgeId': judgeObj.id}) #增加成功就返回该评论的id
+            return JsonResponse({'judgeId': judgeObj.id})  # 增加成功就返回该评论的id
         except:
             return JsonResponse({'msg': '评论失败!'})
 
 
-#点赞功能
+# 点赞功能
 def doCall(request):
-
-    if request.method=='POST':
+    if request.method == 'POST':
 
         try:
-            blogId=request.POST.get('blogId')
-            docall=request.POST.get('docall')
-            blogObj=Blog.objects.filter(id=blogId).first()
-            nowLikes=blogObj.total_likes
-            blogObj.total_likes=nowLikes+int(docall)
+            blogId = request.POST.get('blogId')
+            docall = request.POST.get('docall')
+            blogObj = Blog.objects.filter(id=blogId).first()
+            nowLikes = blogObj.total_likes
+            blogObj.total_likes = nowLikes + int(docall)
             blogObj.save()
-            return JsonResponse({'msg':'点赞成功!'})
+            return JsonResponse({'msg': '点赞成功!'})
         except:
-            return JsonResponse({'msg':'点赞失败!'})
+            return JsonResponse({'msg': '点赞失败!'})
 
 
-#博客编辑
-def modifyBlog(request,blogid,authorid):
+# 搜索功能 返回一个博客对象列表
+def search(request):
+    if request.method == 'POST':
+        keyword = request.POST.get('keyword')[:100]  # 关键字
+        keyworldObj = SearchTable()
+        keyworldObj.keyword = keyword
+        keyworldObj.save()
+        blogObjs = Blog.objects.filter(
+            Q(title__contains=keyword.upper()) | Q(category__title__contains=keyword.upper()) | Q(
+                title__contains=keyword.lower()) | Q(category__title__contains=keyword.lower()))
+        blogObjList = []
+        if blogObjs:
+            for blogObj in blogObjs:
+                conDic = {
+                    'title': blogObj.title,
+                    'author': blogObj.author.username,
+                    'category': blogObj.category.title,
+                    'summary': blogObj.summary,
+                    'createdTime': str(blogObj.createdTime),
+                    'blogId': blogObj.id
+                }
+                blogObjList.append(conDic)
+        return JsonResponse({'data': blogObjList})
 
-    if request.method=='GET':
+
+# 时间戳转换成日期
+def timestamp_to_date(timestamp):
+    # 转换为其他日期格式,如:"%Y-%m-%d %H:%M:%S"
+    timeArray = localtime(timestamp)  # 30/12/2020 21:05:19
+    otherStyleTime = strftime("%Y-%m-%d %H:%M:%S", timeArray)
+    return otherStyleTime
+
+
+# 博客编辑
+def modifyBlog(request, blogid, authorid):
+    if request.method == 'GET':
         authorid = '1'
-        blogObj = Blog.objects.filter(author=User.objects.filter(id=authorid).first()).filter(id=blogid).first()
-        content = blogObj.content
+        blogObj = Blog.objects.filter(author_id=authorid).filter(id=blogid).first()
 
-        return render(request,'modifyBlog.html',context=locals())
+        content = blogObj.content  # 内容
+        title = blogObj.title  # 标题
+        category = blogObj.category  # 分类
+        tags = blogObj.tags.split('LLL')  # 标签
+
+        while len(tags)<3:
+            tags.append('python')
+
+        tag1=tags[0]
+        tag2=tags[1]
+        tag3=tags[2]
+
+
+
+
+
+        return render(request, 'modifyBlog.html', context=locals())
+
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        category = request.POST.get('category')
+        category='123'
+        tag1 = request.POST.get('tag1')
+        tag2 = request.POST.get('tag2')
+        tag3 = request.POST.get('tag3')
+        content = request.POST.get('content')
+        blogObj = Blog.objects.filter(author_id=authorid).filter(id=blogid).first()
+        blogObj.title = title
+
+        categoryObj=Category.objects.filter(title=category).first()
+        if categoryObj:
+            blogObj.category_id=categoryObj.id
+        else: #如果数据库中没有该类,则新建该类
+            newCategoryObj=Category()
+            newCategoryObj.title=category
+            newCategoryObj.save()
+            blogObj.category_id=newCategoryObj.id
+        blogObj.tags = 'LLL'.join([tag1, tag2, tag3])  # 以LLL作为分隔符
+        blogObj.content = content
+        blogObj.summary = content[:200]
+        blogObj.updatedTime = timestamp_to_date(time())
+        blogObj.save()
+        # 重定向到展示页面
+        return redirect(reverse("app:learningPlanet", kwargs={'blogid': blogid}))

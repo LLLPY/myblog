@@ -45,12 +45,12 @@ class LearnMiddleWare(MiddlewareMixin):
 
                 # HTTP_USER_AGENT = '无'
 
-            print(f'IP:{ip}')
-            print(f'计算机名称:{COMPUTERNAME}')
-            print(f'操作系统:{OS}')
-            print(f'客户端的用户文件路径:{USERPROFILE}')
-            print(f'请求头:{HTTP_USER_AGENT}')
-            print(f'跳转的网页:{HTTP_REFERER}')
+            # print(f'IP:{ip}')
+            # print(f'计算机名称:{COMPUTERNAME}')
+            # print(f'操作系统:{OS}')
+            # print(f'客户端的用户文件路径:{USERPROFILE}')
+            # print(f'请求头:{HTTP_USER_AGENT}')
+            # print(f'跳转的网页:{HTTP_REFERER}')
 
             try:
                 requestLog = RequestLogTable()

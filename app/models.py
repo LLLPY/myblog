@@ -17,7 +17,7 @@ class User(AbstractUser): #模型继承自django自带的User模型 并在其基
 
 
     class Meta:
-        db_table='User' #修改表名
+        db_table='用户表' #修改表名
         verbose_name='用户管理' #admin 后台显示
         verbose_name_plural=verbose_name
 
@@ -78,6 +78,7 @@ class Blog(models.Model):
 
     class Meta:
         db_table='博客' #修改表名
+        ordering=('updatedTime',)
 
 
 #请求记录表
@@ -95,6 +96,20 @@ class RequestLogTable(models.Model):
 
     class Meta:
         db_table='请求记录表'
+
+
+#搜索记录表
+class SearchTable(models.Model):
+
+    #关键字
+    keyword=models.CharField(max_length=100,db_column='关键字')
+
+    # 搜索的日期
+    createdTime = models.DateTimeField(default=timezone.now, db_column='搜索的日期')
+
+
+    class Meta:
+        db_table='搜索记录表'
 
 
 

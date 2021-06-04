@@ -2871,7 +2871,7 @@ _e(function (E, $) {
         });
     };
 });
-// 璇█鍖?
+
 _e(function (E, $) {
     E.langs = {};
 

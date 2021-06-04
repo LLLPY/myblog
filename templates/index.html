@@ -181,75 +181,7 @@
             background-color: rgba(255, 255, 255, 0.2);
         }
 
-        @-webkit-keyframes move {
-            from, 11.1%, to {
-                -webkit-transform: none;
-                transform: none;
-            }
-            22.2% {
-                -webkit-transform: skewX(-12.5deg) skewY(-12.5deg);
-                transform: skewX(-12.5deg) skewY(-12.5deg);
-            }
-            33.3% {
-                -webkit-transform: skewX(6.25deg) skewY(6.25deg);
-                transform: skewX(6.25deg) skewY(6.25deg);
-            }
-            44.4% {
-                -webkit-transform: skewX(-3.125deg) skewY(-3.125deg);
-                transform: skewX(-3.125deg) skewY(-3.125deg);
-            }
-            55.5% {
-                -webkit-transform: skewX(1.5625deg) skewY(1.5625deg);
-                transform: skewX(1.5625deg) skewY(1.5625deg);
-            }
-            66.6% {
-                -webkit-transform: skewX(-0.78125deg) skewY(-0.78125deg);
-                transform: skewX(-0.78125deg) skewY(-0.78125deg);
-            }
-            77.7% {
-                -webkit-transform: skewX(0.390625deg) skewY(0.390625deg);
-                transform: skewX(0.390625deg) skewY(0.390625deg);
-            }
-            88.8% {
-                -webkit-transform: skewX(-0.1953125deg) skewY(-0.1953125deg);
-                transform: skewX(-0.1953125deg) skewY(-0.1953125deg);
-            }
-        }
 
-        @keyframes move {
-            from, 11.1%, to {
-                -webkit-transform: none;
-                transform: none;
-            }
-            22.2% {
-                -webkit-transform: skewX(-12.5deg) skewY(-12.5deg);
-                transform: skewX(-12.5deg) skewY(-12.5deg);
-            }
-            33.3% {
-                -webkit-transform: skewX(6.25deg) skewY(6.25deg);
-                transform: skewX(6.25deg) skewY(6.25deg);
-            }
-            44.4% {
-                -webkit-transform: skewX(-3.125deg) skewY(-3.125deg);
-                transform: skewX(-3.125deg) skewY(-3.125deg);
-            }
-            55.5% {
-                -webkit-transform: skewX(1.5625deg) skewY(1.5625deg);
-                transform: skewX(1.5625deg) skewY(1.5625deg);
-            }
-            66.6% {
-                -webkit-transform: skewX(-0.78125deg) skewY(-0.78125deg);
-                transform: skewX(-0.78125deg) skewY(-0.78125deg);
-            }
-            77.7% {
-                -webkit-transform: skewX(0.390625deg) skewY(0.390625deg);
-                transform: skewX(0.390625deg) skewY(0.390625deg);
-            }
-            88.8% {
-                -webkit-transform: skewX(-0.1953125deg) skewY(-0.1953125deg);
-                transform: skewX(-0.1953125deg) skewY(-0.1953125deg);
-            }
-        }
 
 
         #content-le fieldset ul li a {
@@ -264,7 +196,6 @@
             position: absolute;
             height: 25%;
             width: 70%;
-            color: skyblue !important;
         }
 
         #content-le fieldset ul li a p {
@@ -283,7 +214,7 @@
         #content-le fieldset ul li a span {
             position: absolute;
             height: 25%;
-            width: 15%;
+            width: 30%;
             right: 0;
             top: 0;
             font-size: 14px;
@@ -293,8 +224,8 @@
 
         }
 
-        #content-le fieldset ul li a #author {
-            right: 105px;
+        #content-le fieldset ul li a span[class=author] {
+            right: 120px;
         }
 
 
@@ -391,9 +322,9 @@
                     <legend style="font-size: 20px"><strong>0318-SPACE</strong> 最新动态</legend>
 
                     <ul>
-                        <li>
+                       {% comment %} <li>
                             <a href="#"><h3><strong>基于深度学习的Python框架-pytorch</strong></h3> <span>时间:2021-5-20</span>
-                                <span id="author">作者:LLL</span>
+                                <span class="author">作者:LLL</span>
                                 <p>
 
                                     PyTorch是一个开源的Python机器学习库，基于Torch，用于自然语言处理等应用程序。
@@ -401,29 +332,28 @@
 
                                 </p>
                             </a>
-                        </li>
-                        <li>
-                            <a href="#"><h3><strong>基于深度学习的Python框架-pytorch</strong></h3> <span>时间:2021-5-20</span>
-                                <span id="author">作者:LLL</span>
-                                <p>
+                        </li>{% endcomment %}
 
-                                    PyTorch是一个开源的Python机器学习库，基于Torch，用于自然语言处理等应用程序。
-                                    2017年1月，由Facebook人工智能研究院（FAIR）基于Torch推出了PyTorch。它是一个基于Python的可续计算包，提供两个高级功能：1、具有强大的GPU加速的张量计算（如NumPy）。2、包含自动求导系统的深度神经网络。
+                    {% for blogObj in blogObjList %}
+
+
+                        <li>
+                            <a href="{% url 'app:learningPlanet' blogid=blogObj.blogId %}"><h3><strong>{{ blogObj.title }}</strong></h3> <span>时间:{{ blogObj.createdTime }}</span>
+                                <span class="author">作者:{{ blogObj.author }}</span>
+                                <p>
+                                    {{ blogObj.summary|safe }}
 
                                 </p>
                             </a>
                         </li>
-                        <li>
-                            <a href="#"><h3><strong>基于深度学习的Python框架-pytorch</strong></h3> <span>时间:2021-5-20</span>
-                                <span id="author">作者:LLL</span>
-                                <p>
 
-                                    PyTorch是一个开源的Python机器学习库，基于Torch，用于自然语言处理等应用程序。
-                                    2017年1月，由Facebook人工智能研究院（FAIR）基于Torch推出了PyTorch。它是一个基于Python的可续计算包，提供两个高级功能：1、具有强大的GPU加速的张量计算（如NumPy）。2、包含自动求导系统的深度神经网络。
 
-                                </p>
-                            </a>
-                        </li>
+                    {% endfor %}
+
+
+
+
+
 
                     </ul>
 

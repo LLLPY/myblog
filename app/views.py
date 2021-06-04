@@ -84,12 +84,7 @@ def str_to_timestamp(str_time=None, format='%Y-%m-%d %H:%M:%S'):
         return int(result)
     return int(time())
 
-# # 时间戳转换成日期
-# def timestamp_to_date(timestamp):
-#     # 转换为其他日期格式,如:"%Y-%m-%d %H:%M:%S"
-#     timeArray = localtime(timestamp)  # 30/12/2020 21:05:19
-#     otherStyleTime = strftime("%d/%m/%Y %H:%M:%S", timeArray)
-#     return otherStyleTime
+
 
 #博客首页
 # @cache_page(timeout=60, cache='default')  # timeout指定缓存过期时间,cache指定缓存用的数据库
@@ -109,5 +104,18 @@ def index(request):
 
     #快乐星球的链接 随机链接
     toLearnPlanetLinkId= randint(1,blogNum+1)
+
+    lastThreeBlog=blogObj[blogNum-3:blogNum] #获取最后三条数据
+    blogObjList=[]
+    for blogObj in lastThreeBlog:
+        conDic = {
+            'title': blogObj.title,
+            'author': blogObj.author.username,
+            'category': blogObj.category.title,
+            'summary': blogObj.summary,
+            'createdTime': str(blogObj.createdTime),
+            'blogId': blogObj.id
+        }
+        blogObjList.append(conDic)
 
     return render(request,'index.html',context=locals())
