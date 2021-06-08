@@ -14,8 +14,10 @@ urlpatterns = [
     url(r'^deleteJudgeList/', learningViews.deleteJudgeList, name='deleteJudgeList'),  # 删除评论信息
     url(r'^addJudgeList/', learningViews.addJudgeList, name='addJudgeList'),  # 增加评论信息
     url(r'^doCall/', learningViews.doCall, name='doCall'),  # 点赞
-    url(r'^modifyBlog//(?P<blogid>\d+)/(?P<authorid>\d+)', learningViews.modifyBlog, name='modifyBlog'),  # 修改博客
+    url(r'^modifyBlog/(?P<blogid>\d+)/(?P<authorid>\d+)', learningViews.modifyBlog, name='modifyBlog'),  # 修改博客
     url(r'^search/', learningViews.search, name='search'),  # 搜索功能
+    url(r'^personalCenter/(?P<userId>\d+)', views.personalCenter, name='personalCenter'),  # 个人中心
+    url(r'^logout/(?P<userId>\d+)', views.logout, name='logout'),  # 退出登录
 
     url(r'', views.index, name='index'),  # 首页 这个可以匹配任何路由 所以要放在最下面
 

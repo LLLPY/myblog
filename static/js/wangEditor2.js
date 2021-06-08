@@ -724,7 +724,7 @@ _e(function (E, $) {
         return result;
     }
 
-    // 浠庡綋鍓嶇殑elem锛屽線涓婂幓鏌ユ壘鍚堟硶鏍囩 濡? p head table blockquote ul ol 绛?
+    // 浠庡綋鍓嶇殑elem锛屽線涓婂幓鏌ユ壘鍚堟硶鏍囩 濡?
     E.fn.getLegalTags = function (elem) {
         var legalTags = this.config.legalTags;
         if (!legalTags) {
@@ -2885,7 +2885,6 @@ _e(function (E, $) {
         strikethrough: '删除线',
         eraser: '清空格式',
         source: '源码',
-        quote: '引用',
         fontfamily: '字体',
         fontsize: '字号',
         head: '标题',
@@ -2908,7 +2907,6 @@ _e(function (E, $) {
         dynamicMap: '动态地图',
         clearLocation: '清除位置',
         langDynamicOneLocation: '',
-        insertcode: '插入代码',
         undo: '撤销',
         redo: '重复',
         fullscreen: '全屏'
@@ -2924,7 +2922,6 @@ _e(function (E, $) {
         strikethrough: 'Strikethrough',
         eraser: 'Eraser',
         source: 'Codeview',
-        quote: 'Quote',
         fontfamily: 'Font family',
         fontsize: 'Font size',
         head: 'Head',
@@ -2947,7 +2944,6 @@ _e(function (E, $) {
         dynamicMap: 'Dynamic',
         clearLocation: 'Clear',
         langDynamicOneLocation: 'Only one location in dynamic map',
-        insertcode: 'Insert Code',
         undo: 'Undo',
         redo: 'Redo',
         fullscreen: 'Full screnn'
@@ -2988,7 +2984,6 @@ _e(function (E, $) {
         'forecolor',
         'bgcolor',
         '|',
-        'quote',
         'fontfamily',
         'fontsize',
         'head',
@@ -3003,7 +2998,6 @@ _e(function (E, $) {
         'table',
         '|',
         'location',
-        'insertcode',
         '|',
         'undo',
         'redo',
@@ -3113,10 +3107,6 @@ _e(function (E, $) {
             normal: '<a href="#" tabindex="-1"><i class="wangeditor-menu-img-eraser"></i></a>',
             selected: '.selected'
         },
-        quote: {
-            normal: '<a href="#" tabindex="-1"><i class="wangeditor-menu-img-quotes-left"></i></a>',
-            selected: '.selected'
-        },
         source: {
             normal: '<a href="#" tabindex="-1"><i class="wangeditor-menu-img-code"></i></a>',
             selected: '.selected'
@@ -3179,10 +3169,6 @@ _e(function (E, $) {
         },
         location: {
             normal: '<a href="#" tabindex="-1"><i class="wangeditor-menu-img-location"></i></a>',
-            selected: '.selected'
-        },
-        insertcode: {
-            normal: '<a href="#" tabindex="-1"><i class="wangeditor-menu-img-terminal"></i></a>',
             selected: '.selected'
         },
         undo: {
@@ -3759,239 +3745,8 @@ _e(function (E, $) {
     });
 
 });
-// quote 鑿滃崟
-_e(function (E, $) {
-
-    E.createMenu(function (check) {
-        var menuId = 'quote';
-        if (!check(menuId)) {
-            return;
-        }
-        var editor = this;
-        var lang = editor.config.lang;
-
-        // 鍒涘缓 menu 瀵硅薄
-        var menu = new E.Menu({
-            editor: editor,
-            id: menuId,
-            title: lang.quote,
-            commandName: 'formatBlock',
-            commandValue: 'blockquote'
-        });
-
-        // 瀹氫箟click浜嬩欢
-        menu.clickEvent = function (e) {
-            var rangeElem = editor.getRangeElem();
-            var $rangeElem;
-            if (!rangeElem) {
-                e.preventDefault();
-                return;
-            }
-            var currentQuote = editor.getSelfOrParentByName(rangeElem, 'blockquote');
-            var $quote;
-
-            if (currentQuote) {
-                // 璇存槑褰撳墠鍦╭uote涔嬪唴锛屼笉鍋氫换浣曞鐞?
-                e.preventDefault();
-                return;
-            }
-
-            rangeElem = editor.getLegalTags(rangeElem);
-            $rangeElem = $(rangeElem);
-
-            // 鏃犳枃瀛楋紝鍒欎笉鍏佽鎵ц寮曠敤
-            if (!$rangeElem.text()) {
-                return;
-            }
 
 
-            if (!rangeElem) {
-                // 鎵ц榛樿鍛戒护
-                // IE8 涓嬫墽琛屾澶勶紙涓嶈繃锛岀粡娴嬭瘯浠ｇ爜鏃犳晥锛屼篃涓嶆姤閿欙級
-                editor.command(e, 'formatBlock', 'blockquote');
-                return;
-            }
-
-            // 鑷畾涔塩ommand浜嬩欢
-            function commandFn() {
-                $quote = $('<p>' + $rangeElem.text() + '</p>');
-                $rangeElem.after($quote).remove();
-                $quote.wrap('<blockquote>');
-            }
-
-            // 鑷畾涔? callback 浜嬩欢
-            function callback() {
-                // callback涓紝璁剧疆range涓簈uote
-                var editor = this;
-                if ($quote) {
-                    editor.restoreSelectionByElem($quote.get(0));
-                }
-            }
-
-            // 鎵ц鑷畾涔夊懡浠?
-            editor.customCommand(e, commandFn, callback);
-        };
-
-        // 瀹氫箟閫変腑鐘舵€佷笅鐨刢lick浜嬩欢
-        menu.clickEventSelected = function (e) {
-            var rangeElem;
-            var quoteElem;
-            var $lastChild;
-
-            // 鑾峰彇褰撳墠閫夊尯鐨別lem锛屽苟璇曞浘寰€涓婃壘 quote 鍏冪礌
-            rangeElem = editor.getRangeElem();
-            quoteElem = editor.getSelfOrParentByName(rangeElem, 'blockquote');
-            if (!quoteElem) {
-                // 娌℃壘鍒帮紝鍒欒繑鍥?
-                e.preventDefault();
-                return;
-            }
-
-            // 鑷畾涔夌殑command浜嬩欢
-            function commandFn() {
-                var $quoteElem;
-                var $children;
-
-                $quoteElem = $(quoteElem);
-                $children = $quoteElem.children();
-                if ($children.length) {
-                    $children.each(function (k) {
-                        var $item = $(this);
-                        if ($item.get(0).nodeName === 'P') {
-                            $quoteElem.after($item);
-                        } else {
-                            $quoteElem.after('<p>' + $item.text() + '</p>');
-                        }
-                        $lastChild = $item;  // 璁板綍鏈€鍚庝竴涓瓙鍏冪礌锛岀敤浜巆allback涓殑range瀹氫綅
-                    });
-                    $quoteElem.remove();
-                    return;
-                }
-            }
-
-            // 鑷畾涔夌殑callback鍑芥暟
-            function callback() {
-                // callback涓紝璁剧疆range涓簂astChild
-                var editor = this;
-                if ($lastChild) {
-                    editor.restoreSelectionByElem($lastChild.get(0));
-                }
-            }
-
-            // 鎵ц鑷畾涔夊懡浠?
-            editor.customCommand(e, commandFn, callback);
-        };
-
-        // 瀹氫箟鏇存柊閫変腑鐘舵€佺殑浜嬩欢
-        menu.updateSelectedEvent = function () {
-            var self = this; //鑿滃崟瀵硅薄
-            var editor = self.editor;
-            var rangeElem;
-
-            rangeElem = editor.getRangeElem();
-            rangeElem = editor.getSelfOrParentByName(rangeElem, 'blockquote');
-
-            if (rangeElem) {
-                return true;
-            }
-
-            return false;
-        };
-
-        // 澧炲姞鍒癳ditor瀵硅薄涓?
-        editor.menus[menuId] = menu;
-
-        // --------------- 涓ゆ鐐瑰嚮 enter 璺冲嚭寮曠敤 ---------------
-        editor.ready(function () {
-            var editor = this;
-            var $txt = editor.txt.$txt;
-            var isPrevEnter = false;  // 鏄笉鏄垰鍒氬湪quote涓寜浜? enter 閿?
-            $txt.on('keydown', function (e) {
-                if (e.keyCode !== 13) {
-                    // 涓嶆槸 enter 閿?
-                    isPrevEnter = false;
-                    return;
-                }
-
-                var rangeElem = editor.getRangeElem();
-                rangeElem = editor.getSelfOrParentByName(rangeElem, 'blockquote');
-                if (!rangeElem) {
-                    // 閫夊尯涓嶆槸 quote
-                    isPrevEnter = false;
-                    return;
-                }
-
-                if (!isPrevEnter) {
-                    // 鏈€杩戞病鏈夊湪qote涓寜enter閿?
-                    isPrevEnter = true;
-                    return;
-                }
-
-                var currentRangeElem = editor.getRangeElem();
-                var $currentRangeElem = $(currentRangeElem);
-                if ($currentRangeElem.length) {
-                    $currentRangeElem.parent().after($currentRangeElem);
-                }
-
-                // 璁剧疆閫夊尯
-                editor.restoreSelectionByElem(currentRangeElem, 'start');
-
-                isPrevEnter = false;
-                // 闃绘榛樿琛屾枃
-                e.preventDefault();
-
-            });
-        }); // editor.ready(
-
-        // --------------- 澶勭悊quote涓棤鍐呭鏃朵笉鑳藉垹闄ょ殑闂 ---------------
-        editor.ready(function () {
-            var editor = this;
-            var $txt = editor.txt.$txt;
-            var $rangeElem;
-
-            function commandFn() {
-                $rangeElem && $rangeElem.remove();
-            }
-            function callback() {
-                if (!$rangeElem) {
-                    return;
-                }
-                var $prev = $rangeElem.prev();
-                if ($prev.length) {
-                    // 鏈? prev 鍒欏畾浣嶅埌 prev 鏈€鍚?
-                    editor.restoreSelectionByElem($prev.get(0));
-                } else {
-                    // 鏃? prev 鍒欏垵濮嬪寲閫夊尯
-                    editor.initSelection();
-                }
-            }
-
-            $txt.on('keydown', function (e) {
-                if (e.keyCode !== 8) {
-                    // 涓嶆槸 backspace 閿?
-                    return;
-                }
-
-                var rangeElem = editor.getRangeElem();
-                rangeElem = editor.getSelfOrParentByName(rangeElem, 'blockquote');
-                if (!rangeElem) {
-                    // 閫夊尯涓嶆槸 quote
-                    return;
-                }
-                $rangeElem = $(rangeElem);
-
-                var text = $rangeElem.text();
-                if (text) {
-                    // quote 涓繕鏈夊唴瀹?
-                    return;
-                }
-                editor.customCommand(e, commandFn, callback);
-
-            }); // $txt.on
-        }); // editor.ready(
-    });
-
-});
 // 瀛椾綋 鑿滃崟
 _e(function (E, $) {
 
@@ -5071,283 +4826,6 @@ _e(function (E, $) {
 
 });
 
-// insertcode 鑿滃崟
-_e(function (E, $) {
-
-    // 鍔犺浇 highlightjs 浠ｇ爜
-    function loadHljs() {
-        if (E.userAgent.indexOf('MSIE 8') > 0) {
-            // 涓嶆敮鎸? IE8
-            return;
-        }
-        var script = document.createElement("script");
-        script.type = "text/javascript";
-        script.src = "http://apps.bdimg.com/libs/highlight.js/9.1.0/highlight.min.js";
-        document.body.appendChild(script);
-    }
-
-
-    E.createMenu(function (check) {
-        var menuId = 'insertcode';
-        if (!check(menuId)) {
-            return;
-        }
-
-        // 鍔犺浇 highlightjs 浠ｇ爜
-        setTimeout(loadHljs, 0);
-
-        var editor = this;
-        var lang = editor.config.lang;
-        var $txt = editor.txt.$txt;
-
-        // 鍒涘缓 menu 瀵硅薄
-        var menu = new E.Menu({
-            editor: editor,
-            id: menuId,
-            title: lang.insertcode
-        });
-
-        // click 浜嬩欢
-        menu.clickEvent = function (e) {
-            var menu = this;
-            var dropPanel = menu.dropPanel;
-
-            // 闅愯棌
-            if (dropPanel.isShowing) {
-                dropPanel.hide();
-                return;
-            }
-
-            // 鏄剧ず
-            $textarea.val('');
-            dropPanel.show();
-
-            // highlightjs 璇█鍒楄〃
-            var hljs = window.hljs;
-            if (hljs && hljs.listLanguages) {
-                $langSelect.css({
-                    'margin-top': '9px',
-                    'margin-left': '5px'
-                });
-                $.each(hljs.listLanguages(), function (key, lang) {
-                    $langSelect.append('<option value="' + lang + '">' + lang + '</option>');
-                });
-            } else {
-                $langSelect.hide();
-            }
-        };
-
-        // 閫変腑鐘舵€佷笅鐨? click 浜嬩欢
-        menu.clickEventSelected = function (e) {
-            var menu = this;
-            var dropPanel = menu.dropPanel;
-
-            // 闅愯棌
-            if (dropPanel.isShowing) {
-                dropPanel.hide();
-                return;
-            }
-
-            // 鏄剧ず
-            dropPanel.show();
-
-            var rangeElem = editor.getRangeElem();
-            var targetElem = editor.getSelfOrParentByName(rangeElem, 'pre');
-            var $targetElem;
-            var className;
-            if (targetElem) {
-                // 纭畾鎵惧埌 pre 涔嬪悗锛屽啀鎵? code
-                targetElem = editor.getSelfOrParentByName(rangeElem, 'code');
-            }
-            if (!targetElem) {
-                return;
-            }
-            $targetElem = $(targetElem);
-
-            // 璧嬪€煎唴瀹?
-            $textarea.val($targetElem.text());
-            if ($langSelect) {
-                // 璧嬪€艰瑷€
-                className = $targetElem.attr('class');
-                if (className) {
-                    $langSelect.val(className.split(' ')[0]);
-                }
-            }
-        };
-
-        // 瀹氫箟鏇存柊閫変腑鐘舵€佺殑浜嬩欢
-        menu.updateSelectedEvent = function () {
-            var self = this; //鑿滃崟瀵硅薄
-            var editor = self.editor;
-            var rangeElem;
-
-            rangeElem = editor.getRangeElem();
-            rangeElem = editor.getSelfOrParentByName(rangeElem, 'pre');
-
-            if (rangeElem) {
-                return true;
-            }
-
-            return false;
-        };
-
-        // 鍒涘缓 panel
-        var $content = $('<div></div>');
-        var $textarea = $('<textarea></textarea>');
-        var $langSelect = $('<select></select>');
-        contentHandle($content);
-        menu.dropPanel = new E.DropPanel(editor, menu, {
-            $content: $content,
-            width: 500
-        });
-
-        // 澧炲姞鍒癳ditor瀵硅薄涓?
-        editor.menus[menuId] = menu;
-
-        // ------ 澧炲姞 content 鍐呭 ------
-        function contentHandle($content) {
-            // textarea 鍖哄煙
-            var $textareaContainer = $('<div></div>');
-            $textareaContainer.css({
-                margin: '15px 5px 5px 5px',
-                height: '160px',
-                'text-align': 'center'
-            });
-            $textarea.css({
-                width: '100%',
-                height: '100%',
-                padding: '10px'
-            });
-            $textarea.on('keydown', function (e) {
-                // 鍙栨秷 tab 閿粯璁よ涓?
-                if (e.keyCode === 9) {
-                    e.preventDefault();
-                }
-            });
-            $textareaContainer.append($textarea);
-            $content.append($textareaContainer);
-
-            // 鎸夐挳鍖哄煙
-            var $btnContainer = $('<div></div>');
-            var $btnSubmit = $('<button class="right">' + lang.submit + '</button>');
-            var $btnCancel = $('<button class="right gray">' + lang.cancel + '</button>');
-
-            $btnContainer.append($btnSubmit).append($btnCancel).append($langSelect);
-            $content.append($btnContainer);
-
-            // 鍙栨秷鎸夐挳
-            $btnCancel.click(function (e) {
-                e.preventDefault();
-                menu.dropPanel.hide();
-            });
-
-            // 纭畾鎸夐挳
-            var codeTpl = '<pre style="max-width:100%;overflow-x:auto;"><code{#langClass}>{#content}</code></pre>';
-            $btnSubmit.click(function (e) {
-                e.preventDefault();
-                var val = $textarea.val();
-                if (!val) {
-                    // 鏃犲唴瀹?
-                    $textarea.focus();
-                    return;
-                }
-
-                var rangeElem = editor.getRangeElem();
-                if ($.trim($(rangeElem).text())) {
-                    codeTpl = '<p><br></p>' + codeTpl;
-                }
-
-                var lang = $langSelect ? $langSelect.val() : ''; // 鑾峰彇楂樹寒璇█
-                var langClass = '';
-                var doHightlight = function () {
-                    $('pre code').each(function(i, block) {
-                        if (window.hljs) {
-                            window.hljs.highlightBlock(block);
-                        }
-                    });
-                };
-
-                // 璇█楂樹寒鏍峰紡
-                if (lang) {
-                    langClass = ' class="' + lang + ' hljs"';
-                }
-
-                // 鏇挎崲鏍囩
-                val = val.replace(/&/gm, '&amp;')
-                         .replace(/</gm, '&lt;')
-                         .replace(/>/gm, '&gt;');
-
-                // ---- menu 鏈€変腑鐘舵€? ----
-                if (!menu.selected) {
-                    // 鎷兼帴html
-                    var html = codeTpl.replace('{#langClass}', langClass).replace('{#content}', val);
-                    editor.command(e, 'insertHtml', html, doHightlight);
-                    return;
-                }
-
-                // ---- menu 閫変腑鐘舵€? ----
-                var targetElem = editor.getSelfOrParentByName(rangeElem, 'pre');
-                var $targetElem;
-                if (targetElem) {
-                    // 纭畾鎵惧埌 pre 涔嬪悗锛屽啀鎵? code
-                    targetElem = editor.getSelfOrParentByName(rangeElem, 'code');
-                }
-                if (!targetElem) {
-                    return;
-                }
-                $targetElem = $(targetElem);
-
-                function commandFn() {
-                    var className;
-                    if (lang) {
-                        className = $targetElem.attr('class');
-                        if (className !== lang + ' hljs') {
-                            $targetElem.attr('class', lang + ' hljs');
-                        }
-                    }
-                    $targetElem.html(val);
-                }
-                function callback() {
-                    editor.restoreSelectionByElem(targetElem);
-                    doHightlight();
-                }
-                editor.customCommand(e, commandFn, callback);
-            });
-        }
-
-        // ------ enter 鏃讹紝涓嶅彟璧锋爣绛撅紝鍙崲琛? ------
-        $txt.on('keydown', function (e) {
-            if (e.keyCode !== 13) {
-                return;
-            }
-            var rangeElem = editor.getRangeElem();
-            var targetElem = editor.getSelfOrParentByName(rangeElem, 'code');
-            if (!targetElem) {
-                return;
-            }
-
-            editor.command(e, 'insertHtml', '\n');
-        });
-
-        // ------ 鐐瑰嚮鏃讹紝绂佺敤鍏朵粬鏍囩 ------
-        function updateMenu() {
-            var rangeElem = editor.getRangeElem();
-            var targetElem = editor.getSelfOrParentByName(rangeElem, 'code');
-            if (targetElem) {
-                // 鍦? code 涔嬪唴锛岀鐢ㄥ叾浠栬彍鍗?
-                editor.disableMenusExcept('insertcode');
-            } else {
-                // 涓嶆槸鍦? code 涔嬪唴锛屽惎鐢ㄥ叾浠栬彍鍗?
-                editor.enableMenusExcept('insertcode');
-            }
-        }
-        $txt.on('keydown click', function (e) {
-            // 姝ゅ蹇呴』浣跨敤 setTimeout 寮傛澶勭悊锛屽惁鍒欎笉瀵?
-            setTimeout(updateMenu);
-        });
-    });
-
-});
 
 // undo 鑿滃崟
 _e(function (E, $) {

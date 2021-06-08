@@ -1,0 +1,20 @@
+{% load static %}
+<style>
+
+    .wangEditor-container {
+            border-radius: 15px;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+</style>
+
+    <link rel="stylesheet" type="text/css" href="{% static 'css/wangEditor.css' %}">
+    <script type="text/javascript" src="{% static 'js/wangEditor1.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/wangEditor2.js' %}"></script>
+
+<script>
+     {% comment %}初始化富文本框{% endcomment %}
+        var editor = new wangEditor('editor-trigger');
+        editor.create();
+</script>

@@ -47,7 +47,7 @@
             left: 0;
             width: 160px;
             height: 100%;
-            {#background-color: rgba(0, 0, 0, 0.5);#}
+        {#background-color: rgba(0, 0, 0, 0.5);#}
 
         }
 
@@ -182,8 +182,6 @@
         }
 
 
-
-
         #content-le fieldset ul li a {
             width: 100%;
             height: 100%;
@@ -289,24 +287,32 @@
         }
 
 
-
     </style>
 
     <div id="myBlog-index">
-
         {% comment %}head部分{% endcomment %}
         <div id="myBlog-head">
 
             <div id="head-le">
-                <img src="{% static 'imgs/favorite.png' %}" alt="0318-SPACE">
+                <img src="{% static 'imgs/favorite.png' %}"
+                     alt="0318-SPACE">
             </div>
 
             <ul id="head-ri">
+                {% if LoginStatus %}
+                    <li><a href="{% url 'app:personalCenter' userId=userId %}"><span class="iconfont">&#xe60f;</span>个人中心</a>
+                    </li>
 
-                <li><a href="{% url 'app:login' %}"><span class="iconfont">&#xec05;</span>登录</a></li>
+                {% else %}
+                    <li><a href="{% url 'app:login' %}"><span class="iconfont">&#xec05;</span>登录</a></li>
+
+                {% endif %}
+
+
                 <li><a href="#"><span class="iconfont">&#xe64d;</span>Contract</a></li>
-                <li><a href="{% url 'app:playingPlanet'  %}"><span class="iconfont">&#xe8e7;</span>快乐星球</a></li>
-                <li><a href="{% url 'app:learningPlanet' blogid=toLearnPlanetLinkId %}"><span class="iconfont">&#xe646;</span>学习星球</a></li>
+                <li><a href="{% url 'app:playingPlanet' %}"><span class="iconfont">&#xe8e7;</span>快乐星球</a></li>
+                <li><a href="{% url 'app:learningPlanet' blogid=toLearnPlanetLinkId %}"><span
+                        class="iconfont">&#xe646;</span>学习星球</a></li>
 
             </ul>
 
@@ -322,38 +328,22 @@
                     <legend style="font-size: 20px"><strong>0318-SPACE</strong> 最新动态</legend>
 
                     <ul>
-                       {% comment %} <li>
-                            <a href="#"><h3><strong>基于深度学习的Python框架-pytorch</strong></h3> <span>时间:2021-5-20</span>
-                                <span class="author">作者:LLL</span>
-                                <p>
 
-                                    PyTorch是一个开源的Python机器学习库，基于Torch，用于自然语言处理等应用程序。
-                                    2017年1月，由Facebook人工智能研究院（FAIR）基于Torch推出了PyTorch。它是一个基于Python的可续计算包，提供两个高级功能：1、具有强大的GPU加速的张量计算（如NumPy）。2、包含自动求导系统的深度神经网络。
-
-                                </p>
-                            </a>
-                        </li>{% endcomment %}
-
-                    {% for blogObj in blogObjList %}
+                        {% for blogObj in blogObjList %}
 
 
-                        <li>
-                            <a href="{% url 'app:learningPlanet' blogid=blogObj.blogId %}"><h3><strong>{{ blogObj.title }}</strong></h3> <span>时间:{{ blogObj.createdTime }}</span>
-                                <span class="author">作者:{{ blogObj.author }}</span>
-                                <p>
-                                    {{ blogObj.summary|safe }}
+                            <li>
+                                <a href="{% url 'app:learningPlanet' blogid=blogObj.blogId %}"><h3>
+                                    <strong>{{ blogObj.title }}</strong></h3> <span>时间:{{ blogObj.createdTime }}</span>
+                                    <span class="author">作者:{{ blogObj.author }}</span>
+                                    <p>
+                                        {{ blogObj.summary|safe }}
 
-                                </p>
-                            </a>
-                        </li>
+                                    </p>
+                                </a>
+                            </li>
 
-
-                    {% endfor %}
-
-
-
-
-
+                        {% endfor %}
 
                     </ul>
 
@@ -369,7 +359,7 @@
 
                         <img src="{% static 'imgs/avatar.png' %}" alt="博客的头像"
                              style="width: 100px;height: 100px;position: absolute;left: 30px;top: 30px;border-radius: 50%;border: 2px solid #FFFFFF;">
-                        <div class="shotInfo" id="author-name">姓名:LLL</div>
+                        <div class="shotInfo" id="author-name">姓名: <a href="{% url 'app:personalCenter' userId=bloggerId %}">LLL</a></div>
                         <div class="shotInfo" id="author-profession">专业:Python</div>
                         <div class="shotInfo" id="author-email">邮箱:2474605919@qq.com</div>
 
@@ -438,11 +428,6 @@
         {% include 'footer.html' %}
 
     </div>
-
-
-
-
-
 {% endblock %}
 
 

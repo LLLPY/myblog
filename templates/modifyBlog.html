@@ -106,15 +106,6 @@
 
         }
 
-        #editor-trigger {
-            height: 700px;
-        }
-
-        .wangEditor-container {
-            border-radius: 15px;
-            overflow: hidden;
-            z-index: 1;
-        }
 
         #myBlog-footer {
             margin-top: 5px;
@@ -160,36 +151,29 @@
                     name="tag3" list="tags" type="text" value="{{ tag3 }}"></div>
             <datalist id="category">
                 {% for categoryObj in categoryList %}
-                    <option>categoryObj.title</option>
-
+                    <option>{{ categoryObj.title }}</option>
                 {% endfor %}
 
             </datalist>
             <datalist id="tags">
                 {% for tag in tagsList %}
-                    <option>tag</option>
+                    <option>{{ tag }}</option>
 
                 {% endfor %}
 
             </datalist>
             <button type="submit" id="submit">发&nbsp;&nbsp;布</button>
         </div>
-        <div id="editor-trigger">
+        <div id="editor-trigger" style="height: 700px">
             {{ content|safe }}
         </div>
     </form>
 
-
-    <link rel="stylesheet" type="text/css" href="{% static 'css/wangEditor.css' %}">
-    <script type="text/javascript" src="{% static 'js/wangEditor1.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/wangEditor2.js' %}"></script>
+    {% comment %}引入富文本文件{% endcomment %}
+    {% include 'editor.html' %}
     <script type="text/javascript">
-
-        {% comment %}初始化富文本框{% endcomment %}
-        var editor = new wangEditor('editor-trigger');
-        editor.create();
-
-        let submitDiv = document.getElementById('submit');
+        window.onload=function () {
+            let submitDiv = document.getElementById('submit');
 
         function addContent() {
             let contentDiv = document.getElementById('editor-trigger');
@@ -198,13 +182,11 @@
             newInput.name = 'content';
             newInput.value = content;
             submitDiv.parentNode.appendChild(newInput);
-
-
-
         }
 
         submitDiv.addEventListener('click', addContent);
 
+        }
 
     </script>
 

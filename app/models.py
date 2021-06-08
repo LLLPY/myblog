@@ -74,7 +74,7 @@ class Blog(models.Model):
     createdTime = models.DateTimeField(default=timezone.now, db_column='文章创建时间')
 
     # 文章修改的时间
-    updatedTime = models.DateTimeField(auto_now=True, db_column='文章修改的时间')  # 自动添加
+    updatedTime = models.DateTimeField(db_column='文章修改的时间')  # 自动添加auto_now=True,
 
     class Meta:
         db_table='博客' #修改表名

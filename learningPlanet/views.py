@@ -5,8 +5,8 @@ from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views.decorators.cache import cache_page
-
 from app.models import Blog, User, SearchTable, Category
+from app.views import isLoginStatus
 from learningPlanet.models import JudgeTable
 
 
@@ -14,7 +14,13 @@ from learningPlanet.models import JudgeTable
 # @cache_page(timeout=60, cache='default')  # timeout指定缓存过期时间,cache指定缓存用的数据库，
 def index(request, blogid):
     if request.method == 'GET':
+
+        LoginStatus, userId = isLoginStatus(request)  # 如果是登录状态则显示个人中心
+
+
+
         learningPlanet = 1  # 如果是学习星球 头部就显示快乐星球
+        showSearchBox = 1  # 显示搜索框
         blogObj = Blog.objects.filter(id=blogid).first()
         blogObj.total_views += 1
         blogObj.save()  # 浏览量加一
@@ -22,19 +28,22 @@ def index(request, blogid):
         authorName = blogObj.author.username  # 作者名称
         authorAvator = blogObj.author.avatar  # 作者头像
         authorId = blogObj.author.id  # 作者的id
+
+
+        #如果登录的用户是超级用户(管理员),则可对文章进行修改操作
+        try:
+            user = User.objects.filter(id=userId).first()
+            isModify=user.is_superuser
+            userName=user.username
+            userAvatar=user.avatar
+        except:
+            isModify=''
+            
+
         blogTitle = blogObj.title  # 文章的标题
         blogContent = blogObj.content  # 文章的内容
-
-        # if blogTitle.endswith('.html'):  # 如果是html文件就不对其进行转义
-        #     safe = 0
-        #     # safe=1
-        blogContent = blogContent.replace('&nbsp;', ' ')
-        # safe = 1
-        # blogTitle=blogTitle.replace('.py','').replace('.html','')
         blogCategory = blogObj.category.title  # 文章的分类
         blogTags = blogObj.tags.split('LLL')  # 文章的标签
-
-
         blogTotalViews = blogObj.total_views  # 文章的浏览量
         blogTotalLikes = blogObj.total_likes  # 文章的获赞量
         blogCreatedTime = blogObj.createdTime  # 文章的发布时间
@@ -147,7 +156,7 @@ def search(request):
                     'title': blogObj.title,
                     'author': blogObj.author.username,
                     'category': blogObj.category.title,
-                    'summary': blogObj.summary,
+                    'summary': blogObj.summary, #.replace('&nbsp;','').replace('<br>','')
                     'createdTime': str(blogObj.createdTime),
                     'blogId': blogObj.id
                 }
@@ -167,6 +176,7 @@ def timestamp_to_date(timestamp):
 def modifyBlog(request, blogid, authorid):
     if request.method == 'GET':
         authorid = '1'
+
         blogObj = Blog.objects.filter(author_id=authorid).filter(id=blogid).first()
 
         content = blogObj.content  # 内容
@@ -174,42 +184,45 @@ def modifyBlog(request, blogid, authorid):
         category = blogObj.category  # 分类
         tags = blogObj.tags.split('LLL')  # 标签
 
-        while len(tags)<3:
+        while len(tags) < 3:
             tags.append('python')
 
-        tag1=tags[0]
-        tag2=tags[1]
-        tag3=tags[2]
+        tag1 = tags[0]
+        tag2 = tags[1]
+        tag3 = tags[2]
 
-        categoryList=Category.objects.all()
-        tagsList=['python','numpy','机器学习','人工智能','可视化','爬虫','web开发']
-
+        categoryList = Category.objects.all()
+        tagsList = ['python', 'numpy', '机器学习', '人工智能', '可视化', '爬虫', 'web开发']
 
         return render(request, 'modifyBlog.html', context=locals())
 
     if request.method == 'POST':
         title = request.POST.get('title')
         category = request.POST.get('category')
-        category='123'
         tag1 = request.POST.get('tag1')
         tag2 = request.POST.get('tag2')
         tag3 = request.POST.get('tag3')
-        content = request.POST.get('content')
+        content = request.POST.get('content')#.replace(' ', '&nbsp;').replace('\n', '<br>')
+
         blogObj = Blog.objects.filter(author_id=authorid).filter(id=blogid).first()
         blogObj.title = title
 
-        categoryObj=Category.objects.filter(title=category).first()
+        categoryObj = Category.objects.filter(title=category).first()
         if categoryObj:
-            blogObj.category_id=categoryObj.id
-        else: #如果数据库中没有该类,则新建该类
-            newCategoryObj=Category()
-            newCategoryObj.title=category
+            blogObj.category_id = categoryObj.id
+        else:  # 如果数据库中没有该类,则新建该类
+            newCategoryObj = Category()
+            newCategoryObj.title = category
             newCategoryObj.save()
-            blogObj.category_id=newCategoryObj.id
+            blogObj.category_id = newCategoryObj.id
         blogObj.tags = 'LLL'.join([tag1, tag2, tag3])  # 以LLL作为分隔符
         blogObj.content = content
         blogObj.summary = content[:200]
         blogObj.updatedTime = timestamp_to_date(time())
+        blogObj.updatedTime=timestamp_to_date(time())
         blogObj.save()
         # 重定向到展示页面
         return redirect(reverse("app:learningPlanet", kwargs={'blogid': blogid}))
+
+
+

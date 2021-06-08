@@ -20,24 +20,9 @@ function NowTime() {
 
 //获取指定节点的css样式(浏览器的兼容写法)
 function getStyle(node, cssStyle) {
-    //node.currentStyle[cssStyle]:IE支持
-    //getComputedStyle(node)[cssStyle]:火狐谷歌支持
     return node.currentStyle ? node.currentStyle[cssStyle] : getComputedStyle(node)[cssStyle];
 }
 
-//自定义通过类名获取节点
-function elementsByClassName(node, classStr) {
-//1.获取node节点下所有节点
-    var nodes = node.getElementsByTagName('*'); //*:通配符
-    var arr = []; //存放符合条件的节点
-    for (var i = 0; i < nodes.length; i++) {
-        if (nodes[i].className === classStr) {
-            arr.push(nodes[i]);
-        }
-    }
-    return arr;
-
-}
 
 //随机整数的生成
 function getRndInteger(min, max) {
@@ -49,32 +34,6 @@ function ranColor() {
     return "rgba(" + parseInt(Math.random() * 256) + "," + parseInt(Math.random() * 256) + "," + parseInt(Math.random() * 256) + "," + Math.random() + ")";
 }
 
-//倒计时
-function countDown(time) {
-    var now_time = +new Date(); //获取当前时间的时间戳
-    var inputTime = +new Date(time);
-    times = (inputTime - now_time) / 1000; //将毫秒转化成秒数
-    d = parseInt(times / 60 / 60 / 24);
-    h = parseInt(times / 60 / 60 % 24);
-    m = parseInt(times / 60 % 60);
-    s = parseInt(times % 60);
-    d = reDoubleInt(d); //格式美化
-    h = reDoubleInt(h);
-    m = reDoubleInt(m);
-    s = reDoubleInt(s);
-    format_time = d + '天' + ':' + h + '时' + ':' + m + '分' + ':' + s + '秒'
-    return '距离' + time + '还有:' + format_time;
-}
-
-//个位数加0
-function reDoubleInt(num) {
-    return num < 10 ? '0' + num : num;
-}
-
-//获取事件对象的兼容写法
-function returnEvnetObject(ev) {
-    return ev || window.event; //renturn re ie8以下不兼容 return window.event支持ie8以下的
-}
 
 //阻止事件冒泡的浏览器兼容性写法
 stopBubble = function (ev) {
@@ -180,61 +139,6 @@ function Crash(node1, node2) {
 }
 
 
-//画圆  参数 圆心的位置:(X,Y) 半径:R 笔的直径 笔的颜色:color(默认是黑色) 父节点:ParentNode(默认是body)
-function drawCircle(X, Y, R, width = 5, color = 'black', ParentNode = document.body) {
-    var newDiv = document.createElement('div');
-    newDiv.style.position = 'absolute';
-    newDiv.style.left = X + 'px';
-    newDiv.style.top = Y + 'px';
-    newDiv.style.width = `${width}px`;
-    newDiv.style.height = `${width}px`;
-    newDiv.style.borderRadius = '50%';
-    newDiv.style.backgroundColor = `${color}`;
-    ParentNode.appendChild(newDiv);  //显示圆心
-
-    //创建笔
-    var pen = document.createElement('div');
-    pen.style.left = X + 'px';
-    pen.style.top = Y - R + 'px'; //在圆心的正上方 笔的初始位置
-    pen.style.position = 'absolute';
-    pen.style.width = `${width}px`;
-    pen.style.height = `${width}px`;
-    pen.style.borderRadius = '50%';
-    pen.style.backgroundColor = `${color}`;
-    ParentNode.appendChild(pen);
-
-    var OneDeg = Math.PI / 180; //1弧度的值
-    var i = 0;
-    //1秒后开始运动
-    setTimeout(function () {
-        timer = setInterval(function () {
-            radian = ++i * OneDeg; //没隔30毫秒增加一弧度
-            if (radian >= 2 * Math.PI) {
-                clearInterval(timer);
-                pen.style.display = 'none';
-            }
-
-
-            x = X + R * Math.sin(radian);
-            y = Y - R * Math.cos(radian); //笔的位置
-            pen.style.left = x + 'px';
-            pen.style.top = y + 'px';
-
-            //留下痕迹
-            var newSpan = document.createElement('span');
-            newSpan.style.position = 'absolute';
-            newSpan.style.width = `${width}px`;
-            newSpan.style.height = `${width}px`;
-            newSpan.style.backgroundColor = `${color}`;
-            newSpan.style.borderRadius = '50%';
-            newSpan.style.left = x + 'px';
-            newSpan.style.top = y + 'px';
-            ParentNode.appendChild(newSpan);
-
-        }, 30);
-    }, 1000);
-
-}
 
 //完美运动函数 同时进行多个运动 cssObj:css样式对象
 function perfectMove(node, cssObj, complete = null) {
@@ -271,18 +175,6 @@ function perfectMove(node, cssObj, complete = null) {
         }
 
     }, 30);
-
-}
-
-//创建ajax对象的兼容写法
-function CreateAjaxObject() {
-    return window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
-
-    try {
-        return new XMLHttpRequest();
-    } catch (e) {
-        return new ActiveXObject("Microsoft.XMLHTTP");
-    }
 
 }
 
@@ -334,14 +226,6 @@ function $ajax(method, url, data = {}, success = null, error = null) {
             }
         }
     }
-}
-
-//获取n天后的时间
-function afterNofDate(n) {
-    var d = new Date();
-    var day = d.getDate();
-    d.setDate(n + day);
-    return d
 }
 
 //setCookie
