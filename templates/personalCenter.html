@@ -123,6 +123,11 @@
 
         }
 
+        span:hover{
+            cursor: pointer;
+        }
+
+
     </style>
 
 
@@ -143,12 +148,28 @@
             <span id="modifyAvatar">修改头像</span>
             <div id="aaa">
 
-                <div class="aaa"><span>昵称:</span> <input type="text" value="最亮的那颗星~"></div>
+                {% if user.username %}
+                    <div class="aaa"><span>昵称:</span> <input type="text" value="{{ user.username }}" contentEditable="false"></div>
+
+                {% else %}
+                    <div class="aaa"><span>昵称:</span> <input type="text" value="最亮的那颗星~"></div>
+
+                {% endif %}
+
+
+
                 <div class="aaa" style="margin-bottom: 10px;"><span>职业:</span> <input type="text" value='全栈开发师'></div>
                 <span style="color: gray;font-size: 16px;">个人简介:</span>
                 <br><br>
+
+            {% if user.desc %}
+             <textarea placeholder="{{ user.desc }}"
+                          style="background-color: transparent; outline: none;resize: none;width: 378px;height: 105px;border-radius: 15px;padding: 10px;text-indent: 2em;overflow: hidden;"></textarea>
+                {% else %}
                 <textarea placeholder="这个人很懒,ta什么都没写~"
                           style="background-color: transparent; outline: none;resize: none;width: 378px;height: 105px;border-radius: 15px;padding: 10px;text-indent: 2em;overflow: hidden;"></textarea>
+            {% endif %}
+
 
             </div>
 
@@ -173,7 +194,7 @@
 
 
 
-{% include 'footer.html' %}
+    {% include 'footer.html' %}
 
 
 {% endblock %}

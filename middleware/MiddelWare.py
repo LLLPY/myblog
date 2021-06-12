@@ -18,49 +18,29 @@ from app.models import RequestLogTable
 '''
 
 
-
 class LearnMiddleWare(MiddlewareMixin):
     def process_request(self, request):
-        requestPath=request.path
+        requestPath = request.path
         ip = request.META.get('REMOTE_ADDR')  # 客户端的ip地址
-        b = re.search(r'favicon.ico|static|undefined', requestPath) #静态文件的请求不需要记录
+        # if ip not in ['61.242.135.70', '127.0.0.1', '119.36.85.145']:
+        b = re.search(r'favicon.ico|static|undefined', requestPath)  # 静态文件的请求不需要记录
         if not b:
             HTTP_USER_AGENT = request.META['HTTP_USER_AGENT']  # 请求头
-
-            try:
-                USERPROFILE = request.META['USERPROFILE']  # 客户端的用户文件路径
-                COMPUTERNAME = request.META['COMPUTERNAME']  # 电脑的名称
-                OS = request.META['OS']  # 电脑的系统
-
-            except:
-                COMPUTERNAME='无'
-                OS='无'
-                USERPROFILE = '无'
-
-
             try:
                 HTTP_REFERER = request.META['HTTP_REFERER']  # 访问本网页前的网页地址
             except:
                 HTTP_REFERER = '无'
 
-                # HTTP_USER_AGENT = '无'
-
             # print(f'IP:{ip}')
-            # print(f'计算机名称:{COMPUTERNAME}')
-            # print(f'操作系统:{OS}')
-            # print(f'客户端的用户文件路径:{USERPROFILE}')
             # print(f'请求头:{HTTP_USER_AGENT}')
             # print(f'跳转的网页:{HTTP_REFERER}')
 
             try:
                 requestLog = RequestLogTable()
                 requestLog.ip = ip
-                requestLog.computerName = COMPUTERNAME
-                requestLog.oS = OS
-                requestLog.userProfile = USERPROFILE
                 requestLog.userAgent = HTTP_USER_AGENT
                 requestLog.httpRefer = HTTP_REFERER
-                requestLog.requestPath=requestPath
+                requestLog.requestPath = requestPath
                 requestLog.save()
             except Exception as result:
                 print('请求记录保存失败!', result)

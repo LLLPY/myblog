@@ -139,8 +139,8 @@
 
     <form action="{% url 'app:modifyBlog' blogid=blogid authorid=authorid %}" method="post">
         <div id="modify-head">
-            <div class="modifyClass"><span>标题</span> <input type="text" value="{{ title }}" name="title"></div>
-            <div class="modifyClass"><span>分类</span> <input type="text" list="category" value="{{ category }}"
+            <div class="modifyClass"><span>标题</span> <input type="text" value="{{ title }}" name="title" required></div>
+            <div class="modifyClass"><span>分类</span> <input type="text" list="category" value="{{ category }}" required
                                                             name="category"></div>
 
             <div class="modifyClass"><span class="modifytag">标签1<span class="iconfont">&#xe636;</span></span><input
@@ -164,27 +164,33 @@
             </datalist>
             <button type="submit" id="submit">发&nbsp;&nbsp;布</button>
         </div>
-        <div id="editor-trigger" style="height: 700px">
-            {{ content|safe }}
+        <div id="editor-trigger" style="height: 700px;">
+
+            {% if content %}
+                {{ content|safe }}
+            {% else %}
+                写下你的想法吧~
+            {% endif %}
+
         </div>
     </form>
 
     {% comment %}引入富文本文件{% endcomment %}
     {% include 'editor.html' %}
     <script type="text/javascript">
-        window.onload=function () {
+        window.onload = function () {
             let submitDiv = document.getElementById('submit');
 
-        function addContent() {
-            let contentDiv = document.getElementById('editor-trigger');
-            content = contentDiv.innerHTML;
-            let newInput = document.createElement('input');
-            newInput.name = 'content';
-            newInput.value = content;
-            submitDiv.parentNode.appendChild(newInput);
-        }
+            function addContent() {
+                let contentDiv = document.getElementById('editor-trigger');
+                content = contentDiv.innerHTML;
+                let newInput = document.createElement('input');
+                newInput.name = 'content';
+                newInput.value = content;
+                submitDiv.parentNode.appendChild(newInput);
+            }
 
-        submitDiv.addEventListener('click', addContent);
+            submitDiv.addEventListener('click', addContent);
 
         }
 

@@ -97,7 +97,7 @@
             color: black;
             background-color: rgba(255, 243, 205, 0.9);
             border-radius: 15px;
-            min-height: 850px;
+            min-height: 500px;
 
         }
 
@@ -154,15 +154,6 @@
 
         }
 
-
-        {% comment %}文章内容{% endcomment %}
-        #main-content {
-            position: relative;
-            width: 100%;
-            padding: 15px;
-            box-sizing: border-box !important;
-        }
-
         {% comment %}文章收藏,点赞等{% endcomment %}
         #blog-extend {
 
@@ -200,7 +191,11 @@
             cursor: pointer;
         }
 
-        #doCall:hover {
+        #collect, #saveRandomPenTag {
+            cursor: pointer;
+        }
+
+        #doCall:hover, #collect:hover, #saveRandomPenTag:hover {
             background-color: #8fd19e;
         }
 
@@ -230,7 +225,7 @@
             top: 50px;
             border-radius: 15px;
             width: 380px;
-
+            min-height: 800px;
         }
 
         #learn-content-ri * {
@@ -252,13 +247,53 @@
         }
 
 
-        #recommendTag {
+        #recommendTag, #randomPenTag {
             position: relative;
             height: 20px;
             top: 50px;
             width: 100px;
             display: inline-block;
             color: #FFFFFF;
+
+        }
+
+        #randomPenFrame {
+            width: 100%;
+            height: 250px;
+            background-color: silver;
+            position: relative;
+            top: 150px;
+
+        }
+
+
+        #randomPenTag, #saveRandomPenTag {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+        }
+
+        #saveRandomPenTag {
+            left: 310px;
+            border: 1px solid silver;
+            background-color: #fbdcdc;
+            font-size: 13px;
+            padding: 2px;
+        }
+
+        #randomPen {
+            width: 96%;
+            height: 200px;
+            border: 1px solid green;
+            position: relative;
+            top: 30px;
+            padding: 5px;
+            background-color: #fbdcdc;
+            color: deepskyblue;
+            resize: none;
+            overflow-y: auto;
+            text-indent: 2em;
+            left: 2%;
 
         }
 
@@ -317,10 +352,7 @@
     </style>
     {% comment %}回到顶部的小火箭{% endcomment %}
     <div id="learn-content">
-
-
         <div id="learn-content-le">
-
             {% comment %}显示当前位置{% endcomment %}
             <div id="nowLocation">
                 当前位置: <strong><a href="#" id="categoryLocation">{{ blogCategory }}</a></strong> >> <strong><a
@@ -341,7 +373,7 @@
                     <span>更新时间:{{ blogUpdatedTime }}</span>
 
                     {% for blogTag in blogTags %}
-                        <span style="margin: 0;padding: 0"><span class="iconfont">&#xe636;</span>{{ blogTag }}</span>
+                        <span style="margin: 0;padding: 0;font-size: 10px;"><span class="iconfont" style="font-size: 10px">&#xe636;</span>{{ blogTag }}</span>
 
                     {% endfor %}
 
@@ -366,20 +398,123 @@
 
 
                 </div>
-                {% comment %}文章内容{% endcomment %}
+                <style>
+                    .wangEditor-menu-container {
+                        display: none !important;
+                    }
 
-                <div id="main-content" style="overflow-x: auto!important;">
+                    .wangEditor-container {
+                        background-color: transparent !important;
+                    }
+
+                    .collected {
+                        background-color: #8fd19e;
+                    }
+
+                    .collect {
+                        background-color: transparent;
+                    }
+
+                </style>
+
+                <div id="editor-trigger"
+                     style="width: 100%;min-height: 500px;overflow-x: auto;overflow-y: hidden;background-color: transparent;"
+                     contentEditable="false">
+
                     {{ blogContent|safe }}
+
                 </div>
+                {% comment %}引入富文本文件{% endcomment %}
+                {% include 'editor.html' %}
+                <script>
+                    {% comment %}改为不可编辑{% endcomment %}
+                    let editorTrigger = document.getElementById('editor-trigger');
+                    editorTrigger.contentEditable = 'false';
+                </script>
                 {% comment %}文章内容end{% endcomment %}
 
                 {% comment %}文章收藏,点赞等{% endcomment %}
                 <div id="blog-extend">
-                    <span id="collect"><a href="#"><span class="iconfont">&#xe620;</span>&nbsp;收藏本文</a></span>
+                    <span id="collect">
+                        <span class="iconfont"> &#xe620;</span>&nbsp;收藏本文
+                    </span>
+
+
+                    <script>
+
+                        let collect = document.getElementById('collect');
+                        if ("{{ isCollected }}") { {% comment %}判断该文章时候已被当前用户收藏{% endcomment %}
+                            collect.className = 'collected';
+                            collect.innerHTML = `<span class="iconfont">&#xe620;</span>&nbsp;已收藏`;
+                        } else {
+                            collect.className = 'collect';
+                        }
+
+                        {% comment %}点击收藏和取消收藏{% endcomment %}
+
+
+                        if ('{{ LoginStatus }}' === 'true') { {% comment %}登录之后才能进行收藏{% endcomment %}
+                            collect.onclick = function () {
+                                if (collect.className.toLowerCase() === 'collected') {
+
+                                    $ajax('post', '{% url "app:collect"%}', {
+                                            'userId': "{{ userId }}",
+                                            'blogId': "{{ blogid }}",
+                                            'isCollected': 0
+                                        },
+                                        function () {
+                                        },
+                                        function (msg) {
+                                            alert(JSON.parse(msg)['msg']);
+                                        }
+                                    )
+
+                                    collect.innerHTML = `<span class="iconfont">&#xe620;</span>&nbsp;收藏本文`;
+                                    collect.className = 'collect';
+                                    collect.style.backgroundColor = 'transparent';
+                                    collect.onmouseover = function () {
+                                        collect.style.backgroundColor = '#8fd19e';
+                                    }
+                                    collect.onmouseleave = function () {
+                                        collect.style.backgroundColor = 'transparent';
+                                    }
+
+
+                                } else {
+                                    $ajax('post', '{% url "app:collect"%}', {
+                                            'userId': "{{ userId }}",
+                                            'blogId': "{{ blogid }}",
+                                            'isCollected': 1
+                                        },
+                                        function () {
+                                        },
+                                        function (msg) {
+                                            alert(msg + '失败');
+                                        }
+                                    )
+
+
+                                    collect.className = 'collected';
+                                    collect.innerHTML = `<span class="iconfont">&#xe620;</span>&nbsp;已收藏`;
+                                    collect.style.backgroundColor = '#8fd19e';
+                                    collect.onmouseover = function () {
+                                    }
+                                    collect.onmouseleave = function () {
+                                    }
+                                }
+
+                            }
+                        } else {
+                            collect.onclick = function () {
+                                alert('请先登录~');
+                            }
+                        }
+
+
+                    </script>
+
                     <span id="doCall"><span class="iconfont">&#xe697;</span>&nbsp;<span
                             class="likeNum">{{ blogTotalLikes }}</span> </span>
-
-
                     <span id="lastPage"><a href="{% url 'app:learningPlanet' blogid=preBlogId %}"><span
                             class="iconfont">&#xe600;</span>&nbsp;上一篇</a></span>
                     <span id="nextPage"><a href="{% url 'app:learningPlanet' blogid=nextBlogId %}">下一篇&nbsp;<span
@@ -387,7 +522,6 @@
 
                     {% comment %}评论{% endcomment %}
                     <style type="text/css">
-
 
                         #qq {
                             width: 600px;
@@ -423,7 +557,6 @@
                             font-size: 14px;
                             color: #e77f29;
                             -webkit-background-clip: text;
-                        {#background-image: linear-gradient(to right, #778899 0%, #333 100%);#}
                             /*粗细 风格 颜色*/
                         }
 
@@ -549,7 +682,6 @@
 
                         .msgCon .msgBox .msgTxt {
                             font-size: 14px;
-                            color: #666;
                             min-height: 40px;
                             line-height: 24px;
                             padding: 10px;
@@ -564,95 +696,8 @@
                         <p>有什么想对作者说的吗?</p>
                         <div class="message" contentEditable='true'></div>
                         <div class="But">
-                            <img src="{% static 'imgs/bba_thumb.gif' %}" class='bq'/>
                             <span class='submit'>发表</span>
-                            <!--face begin-->
-                            <div class="face">
-                                <ul>
-                                    <li><img src="{% static 'imgs/smilea_thumb.gif' %}" title="呵呵]"></li>
-                                    <li><img src="{% static 'imgs/tootha_thumb.gif' %} " title="嘻嘻]"></li>
-                                    <li><img src="{% static 'imgs/laugh.gif' %} " title="[哈哈]"></li>
-                                    <li><img src="{% static 'imgs/tza_thumb.gif   ' %}    " title="[可爱]"></li>
-                                    <li><img src="{% static 'imgs/kl_thumb.gif    ' %}  " title="[可怜]"></li>
-                                    <li><img src="{% static 'imgs/kbsa_thumb.gif  ' %}   " title="[挖鼻屎]"></li>
-                                    <li><img src="{% static 'imgs/cj_thumb.gif    ' %}   " title="[吃惊]"></li>
-                                    <li><img src="{% static 'imgs/shamea_thumb.gif' %}    " title="[害羞]"></li>
-                                    <li><img src="{% static 'imgs/zy_thumb.gif    ' %}   " title="[挤眼]"></li>
-                                    <li><img src="{% static 'imgs/bz_thumb.gif    ' %}   " title="[闭嘴]"></li>
-                                    <li><img src="{% static 'imgs/bs2_thumb.gif   ' %}   " title="[鄙视]"></li>
-                                    <li><img src="{% static 'imgs/lovea_thumb.gif ' %}     " title="[爱你]"></li>
-                                    <li><img src="{% static 'imgs/sada_thumb.gif  ' %}    " title="[泪]"></li>
-                                    <li><img src="{% static 'imgs/heia_thumb.gif  ' %}    " title="[偷笑]"></li>
-                                    <li><img src="{% static 'imgs/qq_thumb.gif    ' %}   " title="[亲亲]"></li>
-                                    <li><img src="{% static 'imgs/sb_thumb.gif    ' %}   " title="[生病]"></li>
-                                    <li><img src="{% static 'imgs/mb_thumb.gif    ' %}       " title="[太开心]"></li>
-                                    <li><img src="{% static 'imgs/ldln_thumb.gif  ' %}   " title="[懒得理你]"></li>
-                                    <li><img src="{% static 'imgs/yhh_thumb.gif   ' %}    " title="[右哼哼]"></li>
-                                    <li><img src="{% static 'imgs/zhh_thumb.gif   ' %}  " title="[左哼哼]"></li>
-                                    <li><img src="{% static 'imgs/x_thumb.gif     ' %}  " title="[嘘]"></li>
-                                    <li><img src="{% static 'imgs/cry.gif         ' %}   " title="[衰]"></li>
-                                    <li><img src="{% static 'imgs/wq_thumb.gif    ' %}  " title="[委屈]"></li>
-                                    <li><img src="{% static 'imgs/t_thumb.gif      ' %}   " title="[吐]"></li>
-                                    <li><img src="{% static 'imgs/k_thumb.gif      ' %}   " title="[打哈气]"></li>
-                                    <li><img src="{% static 'imgs/bba_thumb.gif    ' %}   " title="[抱抱]"></li>
-                                    <li><img src="{% static 'imgs/angrya_thumb.gif ' %}    " title="[怒]"></li>
-                                    <li><img src="{% static 'imgs/yw_thumb.gif     ' %}  " title="[疑问]"></li>
-                                    <li><img src="{% static 'imgs/cza_thumb.gif    ' %}   " title="[馋嘴]"></li>
-                                    <li><img src="{% static 'imgs/88_thumb.gif     ' %}  " title="[拜拜]"></li>
-                                    <li><img src="{% static 'imgs/sk_thumb.gif     ' %}  " title="[思考]"></li>
-                                    <li><img src="{% static 'imgs/sweata_thumb.gif ' %}     " title="[汗]"></li>
-                                    <li><img src="{% static 'imgs/sleepya_thumb.gif' %}     " title="[困]"></li>
-                                    <li><img src="{% static 'imgs/sleepa_thumb.gif ' %}     " title="[睡觉]"></li>
-                                    <li><img src="{% static 'imgs/money_thumb.gif  ' %}     " title="[钱]"></li>
-                                    <li><img src="{% static 'imgs/sw_thumb.gif     ' %}   " title="[失望]"></li>
-                                    <li><img src="{% static 'imgs/cool_thumb.gif   ' %}   " title="[酷]"></li>
-                                    <li><img src="{% static 'imgs/hsa_thumb.gif    ' %}    " title="[花心]"></li>
-                                    <li><img src="{% static 'imgs/hatea_thumb.gif  ' %}      " title="[哼]"></li>
-                                    <li><img src="{% static 'imgs/gza_thumb.gif    ' %}     " title="[鼓掌]"></li>
-                                    <li><img src="{% static 'imgs/dizzya_thumb.gif ' %}     " title="[晕]"></li>
-                                    <li><img src="{% static 'imgs/bs_thumb.gif     ' %}   " title="[悲伤]"></li>
-                                    <li><img src="{% static 'imgs/crazya_thumb.gif ' %}     " title="[抓狂]"></li>
-                                    <li><img src="{% static 'imgs/h_thumb.gif      ' %}    " title="[黑线]"></li>
-                                    <li><img src="{% static 'imgs/yx_thumb.gif     ' %}    " title="[阴险]"></li>
-                                    <li><img src="{% static 'imgs/nm_thumb.gif     ' %}    " title="[怒骂]"></li>
-                                    <li><img src="{% static 'imgs/hearta_thumb.gif ' %}      " title="[心]"></li>
-                                    <li><img src="{% static 'imgs/unheart.gif      ' %}    " title="[伤心]"></li>
-                                    <li><img src="{% static 'imgs/pig.gif          ' %} " title="[猪头]"></li>
-                                    <li><img src="{% static 'imgs/ok_thumb.gif     ' %}  " title="[ok]"></li>
-                                    <li><img src="{% static 'imgs/ye_thumb.gif     ' %}      " title="[耶]"></li>
-                                    <li><img src="{% static 'imgs/good_thumb.gif   ' %}        " title="[good]">
-                                    </li>
-                                    <li><img src="{% static 'imgs/no_thumb.gif     ' %}    " title="[不要]"></li>
-                                    <li><img src="{% static 'imgs/z2_thumb.gif     ' %}        " title="[赞]"></li>
-                                    <li><img src="{% static 'imgs/come_thumb.gif   ' %}           " title="[来]">
-                                    </li>
-                                    <li><img src="{% static 'imgs/sad_thumb.gif' %}" title="[弱]"></li>
-                                    <li><img src="{% static 'imgs/lazu_thumb.gif' %}" title="[蜡烛]"></li>
-                                    <li><img src="{% static 'imgs/clock_thumb.gif ' %}" title="[钟]"></li>
-                                    <li><img src="{% static 'imgs/cake.gif' %}" title="[蛋糕]"></li>
-                                    <li><img src="{% static 'imgs/m_thumb.gif' %}" title="[话筒]"></li>
-                                    <li><img src="{% static 'imgs/weijin_thumb.gif' %}" title="[围脖]">
-                                    </li>
-                                    <li><img src="{% static 'imgs/lxhzhuanfa_thumb.gif' %}" title="[转发]">
-                                    </li>
-                                    <li><img src="{% static 'imgs/lxhluguo_thumb.gif' %}" title="[路过这儿]"></li>
-                                    <li><img src="{% static 'imgs/bofubianlian_thumb.gif' %}"
-                                             title="[bofu变脸]"></li>
-                                    <li><img src="{% static 'imgs/gbzkun_thumb.gif' %}"
-                                             title="[gbz困]"></li>
-                                    <li><img src="{% static 'imgs/boboshengmenqi_thumb.gif' %}"
-                                             title="[生闷气]"></li>
-                                    <li><img src="{% static 'imgs/chn_buyaoya_thumb.gif' %}" title="[不要啊]">
-                                    </li>
-                                    <li><img src="{% static 'imgs/daxiongleibenxiong_thumb.gif' %}"
-                                             title="[dx泪奔]"></li>
-                                    <li><img src="{% static 'imgs/cat_yunqizhong_thumb.gif' %}"
-                                             title="[运气中]"></li>
-                                    <li><img src="{% static 'imgs/youqian_thumb.gif' %}" title="[有钱]">
-                                    </li>
-                                </ul>
-                            </div>
-                            <!--face end-->
+
                         </div>
                     </div>
                     <!--qq end-->
@@ -666,12 +711,10 @@
                             $ajax('post', '{% url "app:returnJudgeList" %}', {'blogId':{{blogid}}},
                                 function (msg) {
                                     msgBoxList = JSON.parse(msg)['judgeList'];
-                                    {#alert('成功' + msg);#}
-                                    innerHTMl(msgBoxList);
+                                    innerHTMl(msgBoxList, false);
 
                                 },
                                 function (msg) {
-                                    {#alert('失败' + msg);#}
                                 });
 
 
@@ -692,13 +735,10 @@
                                     }
                                     doCall.onmouseleave = function () {
                                     }
-
                                 }
-
                                 if (spanClassName.toLowerCase() === 'notlike') {
                                     $ajax('post', {% url 'app:doCall' %}, {'blogId':{{ blogid }}, 'docall': -1});
                                     {% comment %}获赞量减一{% endcomment %}
-
                                     nowLikeNum -= 1;
                                     spanObj.innerHTML = nowLikeNum;
                                     spanObj.className = 'likeNum';
@@ -709,12 +749,8 @@
                                     doCall.onmouseleave = function () {
                                         doCall.style.backgroundColor = 'transparent';
                                     }
-
                                 }
-
-
                             }
-
                             {% comment %}点击分类按钮,返回对应的数据{% endcomment %}
                             let categoryLocation = document.getElementById('categoryLocation');
                             var value = categoryLocation.innerHTML;
@@ -722,28 +758,7 @@
                                 searchAndCategory(value);
                             }
                             {% comment %}点击分类按钮,返回对应的数据end{% endcomment %}
-
-
                         }
-
-
-                        //点击小图片，显示表情
-                        $(".bq").click(function (e) {
-                            $(".face").slideDown(); //慢慢向下展开
-                            e.stopPropagation(); //阻止冒泡事件
-                        });
-
-                        //在桌面任意地方点击，关闭表情框
-                        $(document).click(function () {
-                            $(".face").slideUp(); //慢慢向上收
-                        });
-
-                        //点击小图标时，添加功能
-                        $(".face ul li").click(function () {
-                            let simg = $(this).find("img").clone();
-                            $(".message").append(simg); //将表情添加到输入框
-                        });
-
                         //点击发表按扭，发表内容
                         if ('{{ LoginStatus }}' === 'true') {
                             $("span.submit").click(function () {
@@ -756,7 +771,7 @@
                                 {% comment %}数据保存到服务器{% endcomment %}
                                 $ajax('post', {% url "app:addJudgeList" %},
                                     {
-                                        'judgerId': 1,
+                                        'judgerId': {{ userId }},
                                         'blogId': {{ blogid }},
                                         'date': NowTime(),
                                         'content': txt
@@ -766,31 +781,25 @@
                                         let judgeId = JSON.parse(msg)['judgeId'];
                                         let obj = {
                                             'name': '{{ userName }}',
-                                            'avatar': 'http://www.lll.plus/'+'{{ userAvatar }}',
+                                            'avatar': 'http://www.lll.plus/' + '{{ userAvatar }}',
                                             'date': NowTime(),
                                             'content': txt,
                                             'id': judgeId
                                         };
-                                        innerHTMl([obj]); //渲染当前输入框内容
+                                        innerHTMl([obj], true); //渲染当前输入框内容
                                         $('.message').html(''); // 清空输入框
                                         msgBoxList.unshift(obj); //添加到数组里
-
-
                                     },
                                     function (msg) {
                                         alert(JSON.parse(msg)['msg']);
                                     }
                                 )
-
-
                             });
                         } else {
                             $("span.submit").click(function () {
                                 alert('请先登录~')
                             });
                         }
-
-
                         //删除当前数据
                         $("body").on('click', '.del', function () {
                             let index = $(this).parent().parent().index();
@@ -798,7 +807,7 @@
                             {% comment %}删除数据库中的数据{% endcomment %}
                             $ajax('post', {% url 'app:deleteJudgeList' %}, {'judgeId': judgeId},
                                 function (msg) {
-                                    {#alert(JSON.parse(msg)['msg']);#}
+
                                 },
                                 function (msg) {
                                     alert(JSON.parse(msg)['msg']);
@@ -808,73 +817,130 @@
                             msgBoxList.splice(index, 1);
                             {#window.localStorage.setItem('msgBoxList', JSON.stringify(msgBoxList))#}
                             $(this).parent().parent().remove();
-
-
                         })
 
                         //渲染html
-                        function innerHTMl(List) {
+                        function innerHTMl(List, isFabu) { {% comment %}如果当前时发布评论,则nowId=''{% endcomment %}
                             List = List || [];
                             List.forEach(item => {
-                                let str = `<div class='msgBox' id="${item.id}">
+                                if (isFabu) {
+                                    var nowId = '';
+
+                                } else {
+                                    var nowId = item.judgerId.toString();
+                                }
+                                if ("{{ userId }}" === nowId || nowId === '') {
+
+                                    let str = `<div class='msgBox' id="${item.id}">
+						<div class="headUrl">
+							<img src='${item.avatar}'   width='50' height='50'/>
+							<div>
+								<span class="title" style="color:deepskyblue;">${item.name}</span>
+								<span class="time">${item.date}</span>
+
+							</div>
+  <a class="del">删除</a>
+						</div>
+						<div class='msgTxt'>
+							${item.content}
+						</div>
+					</div>`;
+                                    $(".msgCon").prepend(str);
+                                } else {
+                                    let str = `<div class='msgBox' id="${item.id}">
 						<div class="headUrl">
 							<img src='${item.avatar}'   width='50' height='50'/>
 							<div>
 								<span class="title" style="color:deepskyblue;">${item.name}</span>
 								<span class="time">${item.date}</span>
 							</div>
-							<a class="del">删除</a>
+							<a class="del" style="display: none;">删除</a>
 						</div>
 						<div class='msgTxt'>
 							${item.content}
 						</div>
 					</div>`;
-                                $(".msgCon").prepend(str);
-
+                                    $(".msgCon").prepend(str);
+                                }
                             })
                         }
                     </script>
                     {% comment %}评论end{% endcomment %}
-
                 </div>
-
-
             </div>
-
-
         </div>
 
-
         <div id="learn-content-ri">
-
-
             {% comment %}相关推荐{% endcomment %}
             <span id="recommendTag">相关推荐</span>
-
             <div id="recommend">
-
-
                 <ul>
 
                     {% for recommendBlog in recommendBlogList %}
                         <li><strong style="font-size: 30px;color: #FFFFFF; ">·&nbsp;</strong><a
                                 href="{% url 'app:learningPlanet' blogid=recommendBlog.id %}">{{ recommendBlog.title }}  </a>
                         </li>
-
                     {% endfor %}
-
-
                 </ul>
-
 
             </div>
             {% comment %}相关推荐end{% endcomment %}
+
+            {% comment %}随笔,用于随看随记{% endcomment %}
+            <div id="randomPenFrame"><span id="randomPenTag">随笔</span>
+                <span id="saveRandomPenTag">保存随笔</span>
+                <textarea id="randomPen" placeholder="好记性不如烂笔头,想到什么就记下来吧!" maxlength="300"></textarea>
+            </div>
+
+            <script>
+
+                let saveRandomPenTag = document.getElementById('saveRandomPenTag');
+                if ('{{ LoginStatus }}' === 'true') {
+                    saveRandomPenTag.onclick = function () {
+                        let randomPen = document.getElementById('randomPen');
+                        var content = randomPen.value;
+                        if (!content) {
+                            alert('写点东西再保存吧~');
+
+                        } else {
+                            $ajax('post', '{% url "app:saveRandomPen" %}', {
+                                    "content": content,
+                                    'userId':{{userId}},
+                                    'blogId':{{ blogid }}
+                                },
+                                function () {
+
+                                },
+                                function (msg) {
+                                    alert(JSON.parse(msg)['msg']);
+                                }
+                            )
+
+                            alert('随笔保存成功!');
+                        }
+
+
+                    }
+                } else {
+                    saveRandomPenTag.onclick = function () {
+
+                        alert('请先登录~');
+
+
+                    }
+                }
+
+
+            </script>
+
+
+            {% comment %}随笔,用于随看随记end{% endcomment %}
 
         </div>
 
 
         {% include 'footer.html' %}
-        <div class="actGotop"><a href="javascript:;" title="返回顶部"></a></div>
+        <div class="actGotop"><a href="javascript:" title="返回顶部"></a></div>
         <script type="text/javascript">
             $(function () {
                 $(window).scroll(function () {
@@ -890,6 +956,7 @@
             });
         </script>
         {% comment %}小火箭end{% endcomment %}
+
 
 
 

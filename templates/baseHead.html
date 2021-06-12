@@ -31,7 +31,7 @@
         position: absolute;
         right: -200px;
         height: 120px;
-        width: 600px;
+        width: 545px;
         border-radius: 10px;
 
     }
@@ -40,7 +40,7 @@
         left: 160px;
         position: absolute;
         height: 100%;
-        width: 540px;
+        width: 600px;
     }
 
     #head-mi ul {
@@ -52,7 +52,7 @@
     #head-mi ul li {
         text-align: center;
         float: left;
-        width: 30%;
+        width: 25%;
         height: 95%;
         line-height: 71px;
         color: #FFFFFF !important;
@@ -60,7 +60,7 @@
     }
 
     #head-mi ul li a {
-        font-size: 25px;
+        font-size: 22px;
         border: 1px solid rgba(255, 255, 255, 0.5);
         -webkit-transition: all 0.5s;
         overflow: hidden;
@@ -76,12 +76,12 @@
     }
 
     #head-mi ul li a .iconfont {
-        font-size: 25px;
+        font-size: 22px;
     }
 
     #head-mi ul li a:hover {
         border: 1px solid rgba(255, 255, 255, 0);
-        font-size: 28px;
+        font-size: 25px;
     }
 
     #head-mi ul li a::before {
@@ -123,14 +123,27 @@
             {% if learningPlanet %}
                 <li><a href="{% url 'app:playingPlanet' %}"><span class="iconfont">&#xe8e7;</span>快乐星球</a></li>
             {% elif playingPlanet %}
-                <li><a href="{% url 'app:playingPlanet' %}"><span class="iconfont">&#xe8e7;</span>快乐星球</a></li>
-                <li><a href="{% url 'app:learningPlanet' blogid=toLearnPlanetLinkId %}"><span
+                 <li><a href="{% url 'app:learningPlanet' blogid=toLearnPlanetLinkId %}"><span
                         class="iconfont">&#xe646;</span>学习星球</a>
+                <li><a href="{% url 'app:playingPlanet' %}"><span class="iconfont">&#xe8e7;</span>快乐星球</a></li>
+
                     {% else %}
                 <li><a href="{% url 'app:learningPlanet' blogid=toLearnPlanetLinkId %}"><span
                         class="iconfont">&#xe646;</span>学习星球</a>
                 </li>
             {% endif %}
+
+
+            {% comment %}写博客的链接(同时候可编辑本文一样,只有管理员才能发表博客){% endcomment %}
+            {% if isModify %}
+                 <li><a href="{% url 'app:modifyBlog' blogid='add' authorid=userId %}"><span
+                        class="iconfont">&#xe700;</span>写博客</a>
+                </li>
+
+            {% endif %}
+
+            {% comment %}写博客的链接end{% endcomment %}
+
             {% if LoginStatus %}
                 <li><a href="{% url 'app:personalCenter' userId=userId %}"><span
                         class="iconfont">&#xe60f;</span>个人中心</a></li>

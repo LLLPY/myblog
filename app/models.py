@@ -85,9 +85,6 @@ class Blog(models.Model):
 class RequestLogTable(models.Model):
 
     ip=models.CharField(max_length=30,db_column='IP地址')
-    computerName=models.CharField(max_length=30,db_column='计算机名称')
-    oS=models.CharField(max_length=10,db_column='操作系统')
-    userProfile=models.CharField(max_length=100,db_column='客户端的用户文件路径')
     userAgent=models.CharField(max_length=200,db_column='请求头')
     httpRefer=models.CharField(max_length=100,db_column='跳转的网页')
     requestTime = models.DateTimeField(default=timezone.now, db_column='请求时间')

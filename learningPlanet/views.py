@@ -1,3 +1,4 @@
+import re
 from random import choices, randint
 from time import localtime, strftime, time
 from django.db.models import Q
@@ -7,7 +8,7 @@ from django.urls import reverse
 from django.views.decorators.cache import cache_page
 from app.models import Blog, User, SearchTable, Category
 from app.views import isLoginStatus
-from learningPlanet.models import JudgeTable
+from learningPlanet.models import JudgeTable, CollectTable, RandomPenTable
 
 
 # 学习星球的主页
@@ -16,11 +17,25 @@ def index(request, blogid):
     if request.method == 'GET':
 
         LoginStatus, userId = isLoginStatus(request)  # 如果是登录状态则显示个人中心
-
-
-
         learningPlanet = 1  # 如果是学习星球 头部就显示快乐星球
         showSearchBox = 1  # 显示搜索框
+
+        #判断该用户是否收藏了本文
+        try:
+            isCollected=CollectTable.objects.filter(Q(collectorId=userId) &Q(blogId=blogid)).first().isCollected
+            if not isCollected:
+                isCollected=''
+        except:
+            isCollected=''
+
+
+
+        lastBlogId = Blog.objects.all().count()
+        if int(blogid) > lastBlogId:
+            blogid = lastBlogId
+        elif int(blogid) < 1:
+            blogid = 1
+
         blogObj = Blog.objects.filter(id=blogid).first()
         blogObj.total_views += 1
         blogObj.save()  # 浏览量加一
@@ -29,16 +44,16 @@ def index(request, blogid):
         authorAvator = blogObj.author.avatar  # 作者头像
         authorId = blogObj.author.id  # 作者的id
 
-
-        #如果登录的用户是超级用户(管理员),则可对文章进行修改操作
+        # 如果登录的用户是超级用户(管理员),且该文章的作者也是该管理员则可对文章进行修改操作
         try:
             user = User.objects.filter(id=userId).first()
-            isModify=user.is_superuser
-            userName=user.username
-            userAvatar=user.avatar
+            isModify = user.is_superuser
+            if userId != str(authorId):  # 就算是管理员,但不是本文的作者也不能编辑该文
+                isModify = ''
+            userName = user.username
+            userAvatar = user.avatar
         except:
-            isModify=''
-            
+            isModify = ''
 
         blogTitle = blogObj.title  # 文章的标题
         blogContent = blogObj.content  # 文章的内容
@@ -60,6 +75,8 @@ def index(request, blogid):
         blogCategory = blogObj.category  # 文章的分类
         recommendBlogList = choices(Blog.objects.filter(category=blogCategory), k=5)
         return render(request, 'learningplanet.html', context=locals())
+
+
     if request.method == 'POST':
         return JsonResponse({'msg': 'hello world~'})
 
@@ -79,10 +96,11 @@ def returnJudgeList(request):
                 if judgeObj.isShow:  # 如果是可展示的就添加到评论列表中
                     conDic = {
                         'name': judgeObj.judger.username,  # 评论人的名称
-                        'avatar': str(judgeObj.judger.avatar),  # 评论人的头像地址
+                        'avatar':'http://www.lll.plus/'+ str(judgeObj.judger.avatar),  # 评论人的头像地址
                         'date': str(judgeObj.judgeTime),  # 评论的日期
                         'content': judgeObj.content,  # 评论的内容
-                        'id': judgeObj.id  # 评论的id
+                        'id': judgeObj.id,  # 评论的id
+                        'judgerId':judgeObj.judger.id #评论人的id
                     }
                     resultList.append(conDic)
         return JsonResponse({'judgeList': resultList})
@@ -156,7 +174,7 @@ def search(request):
                     'title': blogObj.title,
                     'author': blogObj.author.username,
                     'category': blogObj.category.title,
-                    'summary': blogObj.summary, #.replace('&nbsp;','').replace('<br>','')
+                    'summary': blogObj.summary,  # .replace('&nbsp;','').replace('<br>','')
                     'createdTime': str(blogObj.createdTime),
                     'blogId': blogObj.id
                 }
@@ -175,7 +193,10 @@ def timestamp_to_date(timestamp):
 # 博客编辑
 def modifyBlog(request, blogid, authorid):
     if request.method == 'GET':
-        authorid = '1'
+
+        print(blogid)
+        if blogid == 'add':
+            return render(request, 'modifyBlog.html', context=locals())
 
         blogObj = Blog.objects.filter(author_id=authorid).filter(id=blogid).first()
 
@@ -197,32 +218,84 @@ def modifyBlog(request, blogid, authorid):
         return render(request, 'modifyBlog.html', context=locals())
 
     if request.method == 'POST':
+
+        lastBlogId = Blog.objects.last().id
+
         title = request.POST.get('title')
         category = request.POST.get('category')
         tag1 = request.POST.get('tag1')
         tag2 = request.POST.get('tag2')
         tag3 = request.POST.get('tag3')
-        content = request.POST.get('content')#.replace(' ', '&nbsp;').replace('\n', '<br>')
+        content = request.POST.get('content')  # .replace(' ', '&nbsp;').replace('\n', '<br>')
+
+        categoryObj = Category.objects.filter(title=category).first()
+        if not categoryObj:  # 如果数据库中没有该类,则新建该类
+            categoryObj = Category()
+            categoryObj.title = category
+            categoryObj.save()
+
+        # 如果blogid=add 说明是新增博客
+        if blogid == 'add':
+            newBlog = Blog()
+            newBlog.id = lastBlogId + 1
+            newBlog.title = title
+            newBlog.author_id = authorid
+            newBlog.category_id = categoryObj.id
+            newBlog.content = content
+            newBlog.summary = ''.join(re.findall(r'(<p>.*?</p>)',content))[:200]
+
+            newBlog.updatedTime = timestamp_to_date(time())
+            newBlog.tags = 'LLL'.join([tag1, tag2, tag3])  # 以LLL作为分隔符
+            newBlog.save()
+            # 重定向到展示页面
+            return redirect(reverse("app:learningPlanet", kwargs={'blogid': newBlog.id}))
 
         blogObj = Blog.objects.filter(author_id=authorid).filter(id=blogid).first()
         blogObj.title = title
-
-        categoryObj = Category.objects.filter(title=category).first()
-        if categoryObj:
-            blogObj.category_id = categoryObj.id
-        else:  # 如果数据库中没有该类,则新建该类
-            newCategoryObj = Category()
-            newCategoryObj.title = category
-            newCategoryObj.save()
-            blogObj.category_id = newCategoryObj.id
+        blogObj.category_id = categoryObj.id
         blogObj.tags = 'LLL'.join([tag1, tag2, tag3])  # 以LLL作为分隔符
         blogObj.content = content
-        blogObj.summary = content[:200]
+        blogObj.summary = ''.join(re.findall(r'(<p>.*?</p>)',content))[:200].replace('<p>','').replace('</p>','')
         blogObj.updatedTime = timestamp_to_date(time())
-        blogObj.updatedTime=timestamp_to_date(time())
         blogObj.save()
         # 重定向到展示页面
         return redirect(reverse("app:learningPlanet", kwargs={'blogid': blogid}))
 
+#收藏和取消收藏文章
+def collect(request):
 
+    if request.method=='POST':
+        userId=request.POST.get('userId')
+        blogId=request.POST.get('blogId')
+        isCollected=request.POST.get('isCollected')
+        try:
+            collectObj=CollectTable.objects.filter(collectorId_id=userId).filter(blogId_id=blogId).first()
+            if not collectObj: #如果是第一次收藏 则需要创建新的对象记录
+                collectObj=CollectTable()
+                collectObj.collectorId_id=userId
+                collectObj.blogId_id=blogId
+            collectObj.isCollected=isCollected
+            collectObj.save()
+        except:
+            print('收藏操作失败~')
+            return JsonResponse({'msg': '收藏操作失败~'})
 
+        return JsonResponse({'msg':'收藏成功~'})
+
+#保存随笔
+def saveRandomPen(request):
+    if request.method=='POST':
+        userId = request.POST.get('userId')
+        blogId = request.POST.get('blogId')
+        content=request.POST.get('content')
+
+        try:
+            randomPenObj=RandomPenTable()
+            randomPenObj.randomPenBlogId_id=blogId
+            randomPenObj.randomPenUserId_id=userId
+            randomPenObj.randomPenContent=content
+            randomPenObj.save()
+        except:
+            return JsonResponse({'msg':'随笔保存失败!'})
+
+        return JsonResponse({'msg': '随笔保存成功!'})

@@ -22,7 +22,6 @@ from app.models import User, RequestLogTable, Blog
 # 缓存的使用 登录
 @cache_page(timeout=60, cache='default')  # timeout指定缓存过期时间,cache指定缓存用的数据库，
 def login(request):
-
     if request.method=='GET':
         return render(request,'login.html')
 
@@ -44,6 +43,8 @@ def login(request):
         #使用缓存保存用户的登录状态 同时设置cookie记录用户的登录状态
         #当用户进行的某项操作需要登录后才能使用时,同时检验客户端(cookie)和服务端(cache),以确保操作的安全性
         #登录成功后重定向到首页
+
+
         response=redirect(reverse('app:index'))
         response.set_signed_cookie('userId',user.id,salt='LLL',max_age=7*24*60*60) #设置加密的cookie
         cache.set(str(user.id), 'true', timeout=7*24*60*60) #同时将登录信息保存在缓存中
@@ -152,7 +153,7 @@ def index(request):
             'author': blogObj.author.username,
             'category': blogObj.category.title,
             'summary': blogObj.summary,
-            'createdTime': str(blogObj.createdTime),
+            'createdTime': str(blogObj.createdTime).split(' ')[0],
             'blogId': blogObj.id
         }
         blogObjList.append(conDic)
@@ -172,9 +173,7 @@ def personalCenter(request,userId):
         return redirect(reverse('app:index'))
 
     if request.method=='GET':
-
         user=User.objects.filter(id=userId).first()
-
 
         showSearchBox = 0  # 显示搜索框
         playingPlanet=1 #同时显示快乐星球和学习星球
@@ -183,15 +182,10 @@ def personalCenter(request,userId):
         blogNum = blogObj.count()  # 博客数量
         # 快乐星球的链接 随机链接
         toLearnPlanetLinkId = randint(1, blogNum + 1)
-
-
-
-
         return render(request,'personalCenter.html',context=locals())
 
 #退出登录
 def logout(request,userId):
-
     cache.set(userId,'0')
     response=redirect(reverse('app:index'))
     response.delete_cookie('userId')
