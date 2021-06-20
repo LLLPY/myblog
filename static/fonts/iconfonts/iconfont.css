@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 2463933 */
-  src: url('iconfont.woff2?t=1623064197494') format('woff2'),
-       url('iconfont.woff?t=1623064197494') format('woff'),
-       url('iconfont.ttf?t=1623064197494') format('truetype');
+  src: url('iconfont.woff2?t=1623862618965') format('woff2'),
+       url('iconfont.woff?t=1623862618965') format('woff'),
+       url('iconfont.ttf?t=1623862618965') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,26 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-gongdanguanli-jianying:before {
+  content: "\e705";
+}
+
+.icon-mingxinpianpostcard6:before {
+  content: "\e958";
+}
+
+.icon-xieboke:before {
+  content: "\e624";
+}
+
+.icon-gengduo:before {
+  content: "\e62b";
+}
+
+.icon-mingxinpian:before {
+  content: "\e630";
 }
 
 .icon-guanliyuan:before {

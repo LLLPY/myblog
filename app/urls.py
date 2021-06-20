@@ -20,6 +20,17 @@ urlpatterns = [
     url(r'^logout/(?P<userId>\d+)', views.logout, name='logout'),  # 退出登录
     url(r'^collect/', learningViews.collect, name='collect'),  # 收藏和取消收藏文章
     url(r'^saveRandomPen/', learningViews.saveRandomPen, name='saveRandomPen'),  # 保存随笔
+    url(r'^returnCollectList/', views.returnCollectList, name='returnCollectList'),  # 返回个人收藏的数据
+    url(r'^returnRandomPenList/', views.returnRandomPenList, name='returnRandomPenList'),  # 返回个人随笔的数据
+    url(r'^deleteRandomPen/', learningViews.deleteRandomPen, name='deleteRandomPen'),  # 删除随笔
+    url(r'^modifyAvatar/', views.modifyAvatar, name='modifyAvatar'),  # 修改头像
+    url(r'^sendCode/', views.sendCode, name='sendCode'),  # 发送验证码
+    url(r'^modifyDesc/', views.modifyDesc, name='modifyDesc'),  # 修改个人资料
+    url(r'^modifyrandomPen/', views.modifyrandomPen, name='modifyrandomPen'),  # 修改随笔
+
+
+
+
 
     url(r'', views.index, name='index'),  # 首页 这个可以匹配任何路由 所以要放在最下面
 

@@ -38,6 +38,8 @@ class CollectTable(models.Model):
     #是否收藏
     isCollected=models.BooleanField(default=0,db_column='是否被收藏')
 
+    #收藏时的日期
+    collectTime=models.DateField(auto_now=True,db_column='收藏日期')
 
     class Meta:
         db_table='收藏记录表'
@@ -57,6 +59,10 @@ class RandomPenTable(models.Model):
 
     #随笔时间
     randomPenTime=models.DateField(auto_now=True,db_column='随笔的时间')
+
+    #删除后隐藏
+    isShow=models.BooleanField(default=1,db_column='是否显示')
+
 
     class Meta:
         db_table='随笔记录表'

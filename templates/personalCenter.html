@@ -3,191 +3,463 @@
 {% block title %}个人中心{% endblock %}
 
 {% block content %}
-
     {% include 'baseHead.html' %}
-
-    <style>
-
-        #personalContent {
-            width: 100%;
-            height: 1200px;
-            margin-top: 10px;
-            border: 1px solid blue;
-            position: relative;
-            margin-bottom: 10px;
-
-        }
-
-
-        #personalDesc {
-            width: 500px;
-            height: 500px;
-            position: relative;
-            background-color: rgba(125, 187, 135, 1);
-            top: 10px;
-            left: 10px;
-            border-radius: 15px;
-        }
-
-        #personalAvatar {
-            position: absolute;
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            border: 2px solid white;
-            left: 100px;
-            top: 20px;
-        }
-
-        #aaa {
-            position: absolute;
-            left: 100px;
-            width: 400px;
-            height: 350px;
-            top: 150px;
-        }
-
-        #aaa .aaa {
-            width: 98%;
-            height: 20%;
-            margin-top: 10px;
-            border: 1px solid gray;
-            position: relative;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        #aaa .aaa span {
-            position: absolute;
-            left: 0;
-            width: 15%;
-            height: 100%;
-            text-align: center;
-            line-height: 68px;
-        }
-
-
-        #aaa .aaa input {
-            outline: none;
-            right: 5%;
-            position: absolute;
-            height: 100%;
-            width: 80%;
-            font-size: 20px;
-            border: none;
-            background-color: transparent;
-        }
-
-        #degree {
-            position: absolute;
-            left: 80px;
-            top: 120px;
-            font-size: 12px;
-            color: gray;
-        }
-
-        #modifyAvatar {
-            position: absolute;
-            left: 160px;
-            top: 120px;
-            font-size: 12px;
-            color: gray;
-            border: 1px solid transparent;
-            cursor: pointer;
-        }
-
-        #modifyAvatar:hover {
-            background-color: goldenrod;
-            border: 1px solid gray;
-            border-radius: 5px;
-        }
-
-        #collectList {
-            width: 700px;
-            height: 500px;
-            position: absolute;
-            background-color: rgba(125, 187, 135, 1);
-            top: 10px;
-            right: 50px;
-            border-radius: 15px;
-
-        }
-
-        #manageTable {
-            position: relative;
-            width: 100%;
-            height: 600px;
-            background-color: rgba(125, 187, 135, 1);
-            top: 50px;
-            border-radius: 15px;
-
-        }
-
-        span:hover{
-            cursor: pointer;
-        }
-
-
-    </style>
-
-
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'css/personalCenter.css' %}">
     <div id="personalContent">
-        {% comment %}个人资料{% endcomment %}
-        <div id="personalDesc">
+        {% comment %}功能选择框{% endcomment %}
+        <div id="personalContent-le">
+            <ul>
+                <li class="choiceTable" style=" background-color: rgba(255, 255, 255, 0.2);"><span class="iconfont"
+                                                                                                   style="font-size: 18px;">&#xe958;</span>&nbsp;个人简介
+                </li>
+                <li class="choiceTable"><span class="iconfont">&#xe624;</span>&nbsp;我的博客</li>
+                <li class="choiceTable"><span class="iconfont">&#xe700;</span>&nbsp;我的随笔</li>
+                <li class="choiceTable"><span class="iconfont">&#xe620;</span>&nbsp;收藏中心</li>
+                <li class="choiceTable"><span class="iconfont">&#xe705;</span>&nbsp;后台管理</li>
+                <li class="choiceTable"><span class="iconfont">&#xe62b;</span>&nbsp;更&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;多
+                </li>
+            </ul>
 
-            <img id="personalAvatar" src="http://www.lll.plus/{{ user.avatar }}">
+        </div>
 
-            {% if user.is_superuser %}
-                <span id="degree"><span class="iconfont" style="  font-size: 12px;">&#xe68a;</span>管理员</span>
-            {% else %}
-                <span id="degree"><span class="iconfont" style="  font-size: 12px;">&#xe60f;</span>普通用户</span>
+        {% comment %}功能选择框end{% endcomment %}
 
-            {% endif %}
+        {% comment %}内容框{% endcomment %}
+        <div id="personalContent-ri">
 
 
-            <span id="modifyAvatar">修改头像</span>
-            <div id="aaa">
+            {% comment %}个人资料{% endcomment %}
+            <div id="personalDesc" class="functionDiv">
 
-                {% if user.username %}
-                    <div class="aaa"><span>昵称:</span> <input type="text" value="{{ user.username }}" contentEditable="false"></div>
-
+                <img id="personalAvatar" src="http://www.lll.plus/{{ user.avatar }}">
+                {% if user.is_superuser %}
+                    <span id="degree"><span class="iconfont" style="  font-size: 12px;">&#xe68a;</span>管理员</span>
                 {% else %}
-                    <div class="aaa"><span>昵称:</span> <input type="text" value="最亮的那颗星~"></div>
+                    <span id="degree"><span class="iconfont" style="  font-size: 12px;">&#xe60f;</span>普通用户</span>
 
                 {% endif %}
 
 
 
-                <div class="aaa" style="margin-bottom: 10px;"><span>职业:</span> <input type="text" value='全栈开发师'></div>
-                <span style="color: gray;font-size: 16px;">个人简介:</span>
-                <br><br>
+                <form action="{% url 'app:modifyAvatar' %}" method="post" enctype="multipart/form-data"
+                      id="modifyAvatar">
+                    <button>修改头像</button>
+                    <input type="file" name="imgfile" onchange="read()" id="avatarInput">
 
-            {% if user.desc %}
-             <textarea placeholder="{{ user.desc }}"
-                          style="background-color: transparent; outline: none;resize: none;width: 378px;height: 105px;border-radius: 15px;padding: 10px;text-indent: 2em;overflow: hidden;"></textarea>
-                {% else %}
-                <textarea placeholder="这个人很懒,ta什么都没写~"
-                          style="background-color: transparent; outline: none;resize: none;width: 378px;height: 105px;border-radius: 15px;padding: 10px;text-indent: 2em;overflow: hidden;"></textarea>
-            {% endif %}
+                </form>
+
+                {% comment %}显示上传的图片{% endcomment %}
+                <script>
+                    function read() {
+                        var imgData = null; //上传的头像数据
+                        var avatarFile = document.getElementById('avatarInput');
+                        let showAvatar = document.getElementById('personalAvatar'); //用于显示图片的img元素
+                        for (var i = 0; i < avatarFile.files.length; i++) {
+                            let reader = new FileReader();
+                            var file1 = avatarFile.files[i];
+                            reader.readAsDataURL(file1);
+                            reader.onload = function (result) {
+                                //reader对象的result属性存储流读取的数据
+                                imgData = reader.result;
+                                showAvatar.src = `${imgData}`;
+                            }
+                        }
+
+                        {% comment %}图片上传到服务器{% endcomment %}
+                        setTimeout(function () {
+                            let isModify = confirm('是否保存修改?');
+                            if (isModify) {
+                                $ajax('POST', '{% url "app:modifyAvatar" %}', {
+                                        'imgData': imgData.replace(/\+/g, "%2B").replace('data:image/jpeg;base64,', ''),
+                                        'userId': "{{ userId }}"
+                                    },
+                                    function (msg) {
+                                        alert(JSON.parse(msg)['msg']);
+                                    }, function (msg) {
+                                        alert(JSON.parse(msg)['msg']);
+                                    }
+                                )
+                            } else {
+                                showAvatar.src = 'http://www.lll.plus/{{ user.avatar }}';
+                            }
+
+                        }, 1000);
+
+
+                    }
+
+
+                </script>
+                <div class="aaa"><span>昵称:</span> <input class="descMy" type="text" value="{{ user.username }}"
+                                                         maxlength="20" required></div>
+                <div class="aaa"><span>职业:</span> <input class="descMy" type="text" value='{{ user.job }}'
+                                                         maxlength="20" required>
+                </div>
+                <span id="descTextareaTag">个人简介:</span>
+                <textarea maxlength="300" class="descMy" placeholder="这个人很懒,ta什么都没写~"
+                          id="descTextarea">{{ user.desc }}</textarea>
+
+                {% comment %}修改个人资料{% endcomment %}
+                <script>
+
+                    let descMy = document.getElementsByClassName('descMy');
+                    for (let i = 0; i < descMy.length; i++) {
+                        descMy[i].name = i
+                        descMy[i].onchange = function () {
+                            let thisValue = descMy[i].value || descMy[i].innerHTML;
+                            if (thisValue) {
+                                if (confirm('个人资料有变动,是否保存修改?')) {
+                                    $ajax('post', '{% url "app:modifyDesc" %}', {
+                                            'userId':{{userId}},
+                                            'name': thisValue,
+                                            'job': thisValue,
+                                            'desc': thisValue,
+                                            'whichId': this.name
+                                        },
+                                        function (msg) {
+                                            alert(JSON.parse(msg)['msg']);
+                                        },
+                                        function (msg) {
+                                            alert(JSON.parse(msg)['msg']);
+                                        }
+                                    )
+
+
+                                }
+                            }
+
+
+                        }
+
+                    }
+
+
+                </script>
 
 
             </div>
+            {% comment %}个人资料end{% endcomment %}
+
+
+            {% comment %}我的博客{% endcomment %}
+            <div id="myBlogDiv" class="functionDiv"></div>
+            {% comment %}我的博客end{% endcomment %}
+            {% comment %}我的随笔{% endcomment %}
+            <div id="myRandomPen" class="functionDiv">
+
+                <div id="myRandomPen-top">
+
+                    <textarea id="firstRandomPenContent"
+                              name="{{ firstRandomPenId }}">{{ firstRandomPenContent }} </textarea>
+                </div>
+                <div id="myRandomPen-bottom">
+
+                    <div id="myRandomPen-ri-top">
+                        <table class="table-bordered table-hover" id="myRandomPenTable">
+                            <caption></caption>
+                            <thead>
+                            <tr>
+                                <th>序号</th>
+                                <th>随笔内容</th>
+                                <th>相关博客</th>
+                                <th>随笔时间</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody id="randomPenTbody">
+
+                            {% for randomPenObj in randomPenList %}
+
+                                <tr id="{{ randomPenObj.id }}">
+                                    <td>{{ randomPenObj.Num }}</td>
+                                    <td class="randomSummary">{{ randomPenObj.summary }}</td>
+                                    <td>
+                                        <a href="{% url 'app:learningPlanet' blogid=randomPenObj.blogId %}">{{ randomPenObj.blogTitle }}</a>
+                                    </td>
+                                    <td>{{ randomPenObj.randomPenTime }}</td>
+                                    <td class="deleteRandomPen">删除</td>
+                                    <td style="display: none" id="{{ randomPenObj.id }}">{{ randomPenObj.content }}</td>
+
+                                </tr>
+
+                            {% endfor %}
+
+
+                            </tbody>
+
+
+                        </table>
+                    </div>
+                    <div id="myRandomPen-ri-bottom" style="width: 100%;height: 24%">
+
+                        <span class="changePageOfRandomPen"
+                              id="pre-0">上一页</span>
+                        <span class="changePageOfRandomPen changePageOfRandomPenTag"
+                              id="next-0">下一页</span>
+
+                        <script>
+                            var firstRandomPenContent = document.getElementById('firstRandomPenContent');
+                            let changePageOfRandomPenDiv = document.getElementsByClassName('changePageOfRandomPen');
+                            var randomPenTbody = document.getElementById('randomPenTbody');
+                            for (var i = 0; i < changePageOfRandomPenDiv.length; i++) {
+                                changePageOfRandomPenDiv[i].index = i;//{% comment %}为当前按钮添加索引{% endcomment %}
+                                changePageOfRandomPenDiv[i].onclick = function () {
+                                    let nowId = changePageOfRandomPenDiv[this.index].id;
+                                    let dataLen = randomPenTbody.getElementsByTagName('tr').length;
+                                    var demo = RegExp('next', 'ig');//不区分大小写,全局匹配
+                                    if (nowId === 'pre-0') {
+                                        alert('已经是第一页了~');
+                                    } else if (nowId.search(demo) >= 0 && dataLen < 8) { {% comment %}正则匹配{% endcomment %}
+                                        alert('已是最后一页了');
+                                    } else {
+                                        {% comment %}请求服务器{% endcomment %}
+                                        $ajax('post', '{% url "app:returnRandomPenList" %}', {'nowId': nowId},
+                                            function (msg) {
+                                                let data = JSON.parse(msg);
+                                                let randomPenList = data['randomPenList'];
+                                                let preId = data['preId'];
+                                                let nextId = data['nextId'];
+                                                changePageOfRandomPenDiv[0].id = preId;
+                                                changePageOfRandomPenDiv[1].id = nextId;
+                                                firstRandomPenContent.value = data['firstRandomPenContent'];
+                                                firstRandomPenContent.name = data['id'];
+                                                let str = ``;
+                                                for (var i = 0; i < randomPenList.length; i++) {
+                                                    str += ` <tr id="${randomPenList[i].id}">
+                                <td>${randomPenList[i].Num}</td>
+                                <td class="randomSummary">${randomPenList[i].summary}</td>
+                                <td>
+                                    <a href="http://www.lll.plus/learningPlanet/${randomPenList[i].blogId}">${randomPenList[i].blogTitle}</a>
+                                </td>
+                                <td>${randomPenList[i].randomPenTime}</td>
+                                <td class="deleteRandomPen">删除</td>
+                                <td style="display: none" id="${randomPenList[i].id}">${randomPenList[i].content}</td>
+
+                            </tr>`;
+                                                }
+                                                randomPenTbody.innerHTML = str;
+                                            },
+                                            function (msg) {
+                                                alert(JSON.parse(msg)['msg']);
+                                            }
+                                        )
+                                    }
+
+
+                                }
+                            }
+
+
+                            {% comment %}点击显示对应的内容到左侧的内容框中{% endcomment %}
+                            randomPenTbody.onclick = function (ev) {
+                                let e = ev || window.event;
+                                let target = e.target || window.event.srcElement;
+                                let thisContentId = target.parentNode.lastElementChild.id;
+
+                                if (target.className.toLowerCase() === 'randomsummary') {
+                                    let thisContent = target.parentNode.lastElementChild.innerHTML;
+
+                                    let trList = target.parentNode.parentNode.childNodes;
+                                    {% comment %}未选中的项背景颜色透明{% endcomment %}
+                                    for (let i = 0; i < trList.length; i++) {
+                                        if (trList[i].nodeName.toLowerCase() === 'tr') {
+                                            trList[i].style.backgroundColor = 'transparent';
+
+                                        }
+                                    }
+                                    {% comment %}选中项改变背景颜色{% endcomment %}
+                                    firstRandomPenContent.innerHTML = thisContent;
+                                    firstRandomPenContent.name = thisContentId;
+
+                                } else if (target.className.toLowerCase() === 'deleterandompen') {
+                                    target.parentNode.parentNode.removeChild(target.parentNode);
+                                    {% comment %}页面上删除{% endcomment %}
+                                    {% comment %}数据库中删除{% endcomment %}
+
+                                    $ajax('post', '{% url "app:deleteRandomPen" %}', {'randomPenId': thisContentId},
+                                        function (msg) {
+                                            alert(JSON.parse(msg)['msg']);
+                                        }, function (msg) {
+                                            alert(JSON.parse(msg)['msg']);
+                                        }
+                                    )
+
+                                }
+                            }
+
+                            {% comment %}点击显示对应的内容到左侧的内容框中end{% endcomment %}
+
+                            {% comment %}随时修改随笔的内容{% endcomment %}
+                            {% comment %}随时修改随笔的内容end{% endcomment %}
+
+
+                        </script>
+                    </div>
+
+
+                </div>
+            </div>
+            {% comment %}我的随笔end{% endcomment %}
+
+            {% comment %}收藏中心{% endcomment %}
+            <div id="collectList" class="functionDiv">
+
+                <div id="collectList-top">
+                    <table class="table-bordered" id="collectTable">
+                        <caption>收藏中心</caption>
+                        <thead>
+                        <tr>
+                            <th>序号</th>
+                            <th>博客名</th>
+                            <th>博客作者</th>
+                            <th>收藏时间</th>
+                            <th>相关内容</th>
+                        </tr>
+                        </thead>
+                        <tbody id="collectTbody">
+
+                        {% for collectObj in collectList %}
+                            <tr>
+                                <td>{{ collectObj.id }}  </td>
+                                <td>
+                                    <a href="{% url 'app:learningPlanet' blogid=collectObj.blogId %}">{{ collectObj.blogName }}</a>
+                                </td>
+                                <td><a href="#">{{ collectObj.blogAuthor }}</a></td>
+                                <td>{{ collectObj.collectTime }}</td>
+                                <td style="text-align: left!important;"><a
+                                        href="{% url 'app:learningPlanet' blogid=collectObj.blogId %}">{{ collectObj.summary|safe }}</a>
+                                </td>
+
+
+                            </tr>
+                        {% endfor %}
+
+
+                        </tbody>
+
+                    </table>
+                </div>
+
+                <div id="collectList-bottom">
+
+                    <span class="changePageOfCollect" id="pre-0">上一页</span>
+                    <span class="changePageOfCollect nextPageOfCollect" id="next-0">下一页</span>
+
+                    <script>
+                        let changePageOfCollectDiv = document.getElementsByClassName('changePageOfCollect');
+                        for (var i = 0; i < changePageOfCollectDiv.length; i++) {
+                            changePageOfCollectDiv[i].index = i;//{% comment %}为当前按钮添加索引{% endcomment %}
+                            changePageOfCollectDiv[i].onclick = function () {
+                                let nowId = changePageOfCollectDiv[this.index].id;
+                                var collectTbody = document.getElementById('collectTbody');
+                                let dataLen = collectTbody.getElementsByTagName('tr').length;
+                                var demo = RegExp('next', 'ig');//不区分大小写,全局匹配
+                                if (nowId === 'pre-0') {
+                                    alert('已经是第一页了~');
+                                } else if (nowId.search(demo) >= 0 && dataLen < 8) { {% comment %}正则匹配{% endcomment %}
+                                    alert('已是最后一页了');
+                                } else {
+                                    {% comment %}请求服务器{% endcomment %}
+                                    $ajax('post', '{% url "app:returnCollectList" %}', {'nowId': nowId},
+                                        function (msg) {
+                                            let data = JSON.parse(msg);
+                                            let collectList = data['collectList'];
+
+                                            let preId = data['preId'];
+                                            let nextId = data['nextId'];
+                                            changePageOfCollectDiv[0].id = preId;
+                                            changePageOfCollectDiv[1].id = nextId;
+                                            let str = ``;
+                                            for (var i = 0; i < collectList.length; i++) {
+                                                str += `  <tr>
+                            <td>${collectList[i].id}</td>
+                            <td>
+                                <a href="http://www.lll.plus/learningPlanet/${collectList[i].blogId}">${collectList[i].blogName}</a>
+                            </td>
+                            <td><a href="#">${collectList[i].blogAuthor}</a></td>
+                            <td>${collectList[i].collectTime}</td>
+                            <td style="text-align: left!important;"><a
+                                    href="http://www.lll.plus/learningPlanet/${collectList[i].blogId}">${collectList[i].summary}</a>
+                            </td></tr>`;
+                                            }
+                                            collectTbody.innerHTML = str;
+
+
+                                        },
+                                        function (msg) {
+                                            alert(JSON.parse(msg)['msg']);
+                                        }
+                                    )
+                                }
+
+
+                            }
+                        }
+
+
+                    </script>
+
+
+                </div>
+
+            </div>
+            {% comment %}收藏中心end{% endcomment %}
+
+
+            {% comment %}管理台(身份是管理员才会显示){% endcomment %}
+
+            <div id="manageTable" class="functionDiv">管理台</div>
+
+            {% comment %}管理台end{% endcomment %}
+
+            {% comment %}更多{% endcomment %}
+            <div id="more" class="functionDiv"></div>
+            {% comment %}更多end{% endcomment %}
 
 
         </div>
-        {% comment %}个人资料end{% endcomment %}
+        {% comment %}内容框end{% endcomment %}
 
-        <div id="collectList">收藏记录</div>
+        <script>
+
+            let choiceTableList = document.getElementsByClassName('choiceTable');
+            let FuncList = document.getElementsByClassName('functionDiv');
+            for (let i = 0; i < choiceTableList.length; i++) {
+
+                {% comment %}未选中的背景颜色为透明{% endcomment %}
+                choiceTableList[i].onclick = function () {
+                    for (let m = 0; m < choiceTableList.length; m++) {
+                        choiceTableList[m].style.backgroundColor = 'transparent';
+                    }
+
+                    {% comment %}鼠标移入时的特效{% endcomment %}
+                    for (let k = 0; k < FuncList.length; k++) {
+                        FuncList[k].style.display = 'none';
+                        choiceTableList[k].onmousemove = function () {
+                            choiceTableList[k].style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+                        }
+
+                        {% comment %}鼠标移出时的特效{% endcomment %}
+                        choiceTableList[k].onmouseleave = function () {
+                            if (k === i) {
+                            } else {
+                                choiceTableList[k].style.backgroundColor = 'transparent';
+                            }
+
+                        }
+                    }
+
+                    {% comment %}被选中的背景色为白色{% endcomment %}
+                    choiceTableList[i].style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+                    FuncList[i].style.display = 'block';
+                }
+            }
 
 
-        {% comment %}管理台(身份是管理员才会显示){% endcomment %}
-
-        <div id="manageTable">管理台</div>
-
-        {% comment %}管理台end{% endcomment %}
+        </script>
 
     </div>
-
 
 
 

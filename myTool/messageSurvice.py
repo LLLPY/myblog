@@ -1,64 +1,51 @@
-# -*- coding: utf-8 -*-
-# This file is auto-generated, don't edit it. Thanks.
-import sys
-from typing import List
-from alibabacloud_dysmsapi20170525.client import Client as Dysmsapi20170525Client
-from alibabacloud_tea_openapi import models as open_api_models
-from alibabacloud_dysmsapi20170525 import models as dysmsapi_20170525_models
+# coding=utf-8
+# 导入所需模块，再次之前我们都已经pip install好了的
+import re
+from random import choices
+from aliyunsdkcore.client import AcsClient
+from aliyunsdkcore.request import CommonRequest
+
+def returnMessageSurviceStatus(phoneNumber="13047180318",code='1234'):
+    ACCESSKEYID = 'LTAI5tKziR22m9SD9enPTLR6'
+    ACCESSSECRET = 'l6rEqIDfSNeYYRNgM3q8YZtnmxD99m'
+    # 这三个参数即 AccessKey ID， AccessKey Secret， 地区的id，关于地区id怎么获得我会贴在文章最下方
+    client = AcsClient(ACCESSKEYID, ACCESSSECRET, "cn-shanghai")
+    # 下面就是一些规定的配置，复制即可
+    request = CommonRequest()
+    request.set_accept_format("json")
+    request.set_domain("dysmsapi.aliyuncs.com")
+    request.set_method("POST")
+    request.set_protocol_type("https")  # https | http
+    request.set_version("2017-05-25")
+    request.set_action_name("SendSms")
+
+    # 配置地区id  地区id即为 cn_%s % (所在的地区名，应该是可以细分到市级的，如cn_hangzhou)
+    request.add_query_param("RegionId", "cn-shanghai")
+    # 配置要发送的手机号码
+    request.add_query_param("PhoneNumbers", phoneNumber)
+    # 配置你所设置的信息模板code,文章下方我会贴出来在哪边可以设置信息模板
+    request.add_query_param("TemplateCode", "SMS_218285754")
+    # 这个TemplateParam参数是给信息模板中的变量传值的，正常使用应该是后端获取验证码然后塞到这个参数中的
+    request.add_query_param("TemplateParam", {"code": code})
+    # 这是配置签名的
+    request.add_query_param("SignName", "LLL的个人Blog")
+
+    response = client.do_action(request)  # 调用发送短信方法
+
+    response = str(response, encoding='utf-8')
+    try:
+        code = re.search(r'"Code":"([A-Z]{2})"', response).group()
+        if code == '"Code":"OK"':
+            # print('短信发送成功!')
+            return True
+    except:
+        # print('短信发送失败!')
+        return False
+    return False
 
 
-class Sample:
-    def __init__(self):
-        pass
-
-    @staticmethod
-    def create_client(
-            access_key_id: str,
-            access_key_secret: str,
-    ) -> Dysmsapi20170525Client:
-        """
-        使用AK&SK初始化账号Client
-        @param access_key_id:
-        @param access_key_secret:
-        @return: Client
-        @throws Exception
-        """
-        config = open_api_models.Config(
-            # 您的AccessKey ID,
-            access_key_id=access_key_id,
-            # 您的AccessKey Secret,
-            access_key_secret=access_key_secret
-        )
-        # 访问的域名
-        config.endpoint = 'dysmsapi.aliyuncs.com'
-        return Dysmsapi20170525Client(config)
-
-    @staticmethod
-    def main(
-            args: List[str],
-    ) -> None:
-        client = Sample.create_client('accessKeyId', 'accessKeySecret')
-        send_sms_request = dysmsapi_20170525_models.SendSmsRequest(
-            phone_numbers='13047180318',
-            sign_name='注册验证码',
-            template_code='SMS_217417831'
-        )
-        # 复制代码运行请自行打印 API 的返回值
-        client.send_sms(send_sms_request)
-
-    @staticmethod
-    async def main_async(
-            args: List[str],
-    ) -> None:
-        client = Sample.create_client('accessKeyId', 'accessKeySecret')
-        send_sms_request = dysmsapi_20170525_models.SendSmsRequest(
-            phone_numbers='13047180318',
-            sign_name='注册验证码',
-            template_code='SMS_217417831'
-        )
-        # 复制代码运行请自行打印 API 的返回值
-        await client.send_sms_async(send_sms_request)
-
-
-if __name__ == '__main__':
-    Sample.main(sys.argv[1:])
+#返回随机数
+def returnRandomCode():
+    numberList = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
+    code = ''.join(choices(numberList, k=4))
+    return code

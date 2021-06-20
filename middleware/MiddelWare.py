@@ -6,6 +6,11 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.deprecation import MiddlewareMixin
 from app.models import RequestLogTable
+# 日志器的使用步骤
+# 1.导入logging包
+import logging
+
+logger = logging.getLogger('djangoLog')  # 获取日志器
 
 '''
 
@@ -73,9 +78,11 @@ class LearnMiddleWare(MiddlewareMixin):
         #     return HttpResponse('请求过于频繁，小爬虫快回去睡觉去吧!')
 
     # 界面友好化处理(当服务器出现异常，状态码为500时，为了不让用户知道服务器的故障，可以使用中间件对此进行处理)
-    # def process_exception(self, request, exception):
-    #     print('错误原因:', exception)
-    #     print('客户端ip:', request.META.get('REMOTE_ADDR'))
-    #
-    #     # 如果报错，将页面重定向到指定页面
-    #     return redirect(reverse('app:error'))
+    def process_exception(self, request, exception):
+        errInfo = f'客户端ip:{request.META.get("REMOTE_ADDR")},\n错误原因:{exception}'
+        print(errInfo)
+        #记录日志
+        logger.info(errInfo)  # 信息内容由自己确定
+
+        # 如果报错，将页面重定向到指定页面
+        return redirect(reverse('app:error'))

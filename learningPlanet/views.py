@@ -1,11 +1,10 @@
 import re
-from random import choices, randint
-from time import localtime, strftime, time
+from random import choices
+from time import time
 from django.db.models import Q
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from django.views.decorators.cache import cache_page
 from app.models import Blog, User, SearchTable, Category
 from app.views import isLoginStatus
 from learningPlanet.models import JudgeTable, CollectTable, RandomPenTable
@@ -13,6 +12,9 @@ from learningPlanet.models import JudgeTable, CollectTable, RandomPenTable
 
 # 学习星球的主页
 # @cache_page(timeout=60, cache='default')  # timeout指定缓存过期时间,cache指定缓存用的数据库，
+from myTool.tools import base64ToPicture, timestamp_to_date
+
+
 def index(request, blogid):
     if request.method == 'GET':
 
@@ -20,15 +22,13 @@ def index(request, blogid):
         learningPlanet = 1  # 如果是学习星球 头部就显示快乐星球
         showSearchBox = 1  # 显示搜索框
 
-        #判断该用户是否收藏了本文
+        # 判断该用户是否收藏了本文
         try:
-            isCollected=CollectTable.objects.filter(Q(collectorId=userId) &Q(blogId=blogid)).first().isCollected
+            isCollected = CollectTable.objects.filter(Q(collectorId=userId) & Q(blogId=blogid)).first().isCollected
             if not isCollected:
-                isCollected=''
+                isCollected = ''
         except:
-            isCollected=''
-
-
+            isCollected = ''
 
         lastBlogId = Blog.objects.all().count()
         if int(blogid) > lastBlogId:
@@ -76,7 +76,6 @@ def index(request, blogid):
         recommendBlogList = choices(Blog.objects.filter(category=blogCategory), k=5)
         return render(request, 'learningplanet.html', context=locals())
 
-
     if request.method == 'POST':
         return JsonResponse({'msg': 'hello world~'})
 
@@ -96,11 +95,11 @@ def returnJudgeList(request):
                 if judgeObj.isShow:  # 如果是可展示的就添加到评论列表中
                     conDic = {
                         'name': judgeObj.judger.username,  # 评论人的名称
-                        'avatar':'http://www.lll.plus/'+ str(judgeObj.judger.avatar),  # 评论人的头像地址
+                        'avatar': 'http://www.lll.plus/' + str(judgeObj.judger.avatar),  # 评论人的头像地址
                         'date': str(judgeObj.judgeTime),  # 评论的日期
                         'content': judgeObj.content,  # 评论的内容
                         'id': judgeObj.id,  # 评论的id
-                        'judgerId':judgeObj.judger.id #评论人的id
+                        'judgerId': judgeObj.judger.id  # 评论人的id
                     }
                     resultList.append(conDic)
         return JsonResponse({'judgeList': resultList})
@@ -181,20 +180,17 @@ def search(request):
                 blogObjList.append(conDic)
         return JsonResponse({'data': blogObjList})
 
-
-# 时间戳转换成日期
-def timestamp_to_date(timestamp):
-    # 转换为其他日期格式,如:"%Y-%m-%d %H:%M:%S"
-    timeArray = localtime(timestamp)  # 30/12/2020 21:05:19
-    otherStyleTime = strftime("%Y-%m-%d %H:%M:%S", timeArray)
-    return otherStyleTime
-
+#返回替换后的content
+def returnNewContent(content,title):
+    imgDataList = re.findall(r'<img src="data:image/png;base64,(.*?)alt="">', content)  # 取消贪婪模式
+    imgPathList = base64ToPicture(imgDataList, title)  # 把博客中的base64转成图片保存到本地
+    for i in imgPathList: #把博客内容中的图片数据改成对应的图片路径
+        content = content.replace(rf'<img src="data:image/png;base64,{imgDataList[imgPathList.index(i)]}alt="">',f'<img src="http://127.0.0.1/{i}">',1)  # 每次只替换一次
+    return content
 
 # 博客编辑
 def modifyBlog(request, blogid, authorid):
     if request.method == 'GET':
-
-        print(blogid)
         if blogid == 'add':
             return render(request, 'modifyBlog.html', context=locals())
 
@@ -226,7 +222,9 @@ def modifyBlog(request, blogid, authorid):
         tag1 = request.POST.get('tag1')
         tag2 = request.POST.get('tag2')
         tag3 = request.POST.get('tag3')
-        content = request.POST.get('content')  # .replace(' ', '&nbsp;').replace('\n', '<br>')
+        content = request.POST.get('content')
+        content=returnNewContent(content,title) #使用处理后的博客内容
+        summary = ''.join(re.findall(r'[\u4e00-\u9fa5]', content))[:200]
 
         categoryObj = Category.objects.filter(title=category).first()
         if not categoryObj:  # 如果数据库中没有该类,则新建该类
@@ -241,8 +239,8 @@ def modifyBlog(request, blogid, authorid):
             newBlog.title = title
             newBlog.author_id = authorid
             newBlog.category_id = categoryObj.id
-            newBlog.content = content
-            newBlog.summary = ''.join(re.findall(r'(<p>.*?</p>)',content))[:200]
+            newBlog.content=content
+            newBlog.summary = summary if summary else title  # 匹配中文文字
 
             newBlog.updatedTime = timestamp_to_date(time())
             newBlog.tags = 'LLL'.join([tag1, tag2, tag3])  # 以LLL作为分隔符
@@ -255,47 +253,65 @@ def modifyBlog(request, blogid, authorid):
         blogObj.category_id = categoryObj.id
         blogObj.tags = 'LLL'.join([tag1, tag2, tag3])  # 以LLL作为分隔符
         blogObj.content = content
-        blogObj.summary = ''.join(re.findall(r'(<p>.*?</p>)',content))[:200].replace('<p>','').replace('</p>','')
+        blogObj.summary = summary if summary else title  # 匹配中文文字
         blogObj.updatedTime = timestamp_to_date(time())
         blogObj.save()
         # 重定向到展示页面
         return redirect(reverse("app:learningPlanet", kwargs={'blogid': blogid}))
 
-#收藏和取消收藏文章
-def collect(request):
 
-    if request.method=='POST':
-        userId=request.POST.get('userId')
-        blogId=request.POST.get('blogId')
-        isCollected=request.POST.get('isCollected')
+# 收藏和取消收藏文章
+def collect(request):
+    if request.method == 'POST':
+        userId = request.POST.get('userId')
+        blogId = request.POST.get('blogId')
+        isCollected = request.POST.get('isCollected')
         try:
-            collectObj=CollectTable.objects.filter(collectorId_id=userId).filter(blogId_id=blogId).first()
-            if not collectObj: #如果是第一次收藏 则需要创建新的对象记录
-                collectObj=CollectTable()
-                collectObj.collectorId_id=userId
-                collectObj.blogId_id=blogId
-            collectObj.isCollected=isCollected
+            collectObj = CollectTable.objects.filter(collectorId_id=userId).filter(blogId_id=blogId).first()
+            if not collectObj:  # 如果是第一次收藏 则需要创建新的对象记录
+                collectObj = CollectTable()
+                collectObj.collectorId_id = userId
+                collectObj.blogId_id = blogId
+            collectObj.isCollected = isCollected
+            collectObj.collectTime = timestamp_to_date(time())
             collectObj.save()
         except:
             print('收藏操作失败~')
             return JsonResponse({'msg': '收藏操作失败~'})
 
-        return JsonResponse({'msg':'收藏成功~'})
+        return JsonResponse({'msg': '收藏成功~'})
 
-#保存随笔
+
+# 保存随笔
 def saveRandomPen(request):
-    if request.method=='POST':
+    if request.method == 'POST':
         userId = request.POST.get('userId')
         blogId = request.POST.get('blogId')
-        content=request.POST.get('content')
+        content = request.POST.get('content')
 
         try:
-            randomPenObj=RandomPenTable()
-            randomPenObj.randomPenBlogId_id=blogId
-            randomPenObj.randomPenUserId_id=userId
-            randomPenObj.randomPenContent=content
+            randomPenObj = RandomPenTable()
+            randomPenObj.randomPenBlogId_id = blogId
+            randomPenObj.randomPenUserId_id = userId
+            randomPenObj.randomPenContent = content
             randomPenObj.save()
         except:
-            return JsonResponse({'msg':'随笔保存失败!'})
+            return JsonResponse({'msg': '随笔保存失败!'})
 
         return JsonResponse({'msg': '随笔保存成功!'})
+
+
+#删除随笔
+def deleteRandomPen(request):
+
+    if request.method=='POST':
+        try:
+            randomPenId=request.POST.get('randomPenId')
+            randomPenObj=RandomPenTable.objects.filter(id=randomPenId).first()
+            randomPenObj.isShow=False
+            randomPenObj.save()
+            return JsonResponse({'msg':'随笔删除成功!'})
+        except:
+            return JsonResponse({'msg': '随笔删除失败!'})
+
+    return JsonResponse({'msg': '随笔删除失败!'})

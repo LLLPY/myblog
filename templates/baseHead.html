@@ -1,112 +1,6 @@
 {% load static %}
 {% comment %}头部的样式{% endcomment %}
-<style>
-    * {
-        box-sizing: border-box !important;
-    }
-
-    #myblog-head {
-        width: 100%;
-        height: 120px;
-        border-bottom: 2px solid gray;
-        overflow: hidden;
-        position: relative;
-
-    }
-
-    #head-le {
-        position: absolute;
-        left: 0;
-        width: 160px;
-        height: 100%;
-
-    }
-
-    #head-le img {
-        width: 100%;
-        height: 100%;
-    }
-
-    #head-ri {
-        position: absolute;
-        right: -200px;
-        height: 120px;
-        width: 545px;
-        border-radius: 10px;
-
-    }
-
-    #head-mi {
-        left: 160px;
-        position: absolute;
-        height: 100%;
-        width: 600px;
-    }
-
-    #head-mi ul {
-        width: 100%;
-        height: 120px;
-        position: absolute;
-    }
-
-    #head-mi ul li {
-        text-align: center;
-        float: left;
-        width: 25%;
-        height: 95%;
-        line-height: 71px;
-        color: #FFFFFF !important;
-
-    }
-
-    #head-mi ul li a {
-        font-size: 22px;
-        border: 1px solid rgba(255, 255, 255, 0.5);
-        -webkit-transition: all 0.5s;
-        overflow: hidden;
-        position: relative;
-        text-decoration: none;
-        display: inline-block;
-        height: 60%;
-        width: 90%;
-        margin-top: 20%;
-        border-radius: 10px;
-        color: #FFFFFF;
-
-    }
-
-    #head-mi ul li a .iconfont {
-        font-size: 22px;
-    }
-
-    #head-mi ul li a:hover {
-        border: 1px solid rgba(255, 255, 255, 0);
-        font-size: 25px;
-    }
-
-    #head-mi ul li a::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        bottom: 0;
-        width: 100%;
-        height: 1px;
-        background-color: rgba(255, 255, 255, 0.5);
-        -webkit-transform: translate(-100%, -600%) rotate(9deg);
-        transform: translate(-100%, -600%) rotate(9deg);
-        -webkit-transition-timing-function: cubic-bezier(0.75, 0, 0.125, 1);
-        transition-timing-function: cubic-bezier(0.75, 0, 0.125, 1);
-        -webkit-transition: all 0.5s;
-        transition: all 0.5s;
-    }
-
-    #head-mi ul li a:hover::before {
-        -webkit-transform: translate(0, 0);
-        transform: translate(0, 0);
-    }
-
-
-</style>
+<link rel="stylesheet" href="{% static 'css/baseHead.css' %}">
 {% comment %}头部的样式end{% endcomment %}
 
 {% comment %}head部分{% endcomment %}
@@ -242,8 +136,6 @@
             }
 
             {% comment %}用于搜索和点击分类按钮返回对应数据的函数end{% endcomment %}
-
-
             function submitFn(obj, evt) {
                 value = $(obj).find('.search-input').val().trim();
 
@@ -275,18 +167,7 @@
         <span class="iconfont" style="font-size: 20px">&#xe652;</span>退出登录
     </button>
     </form>
-    <style>
 
-        #logout {
-            border: none;
-            transition: all 0.5s linear;
-            background-color: rgba(125,187,135,1);
-        }
-
-        #logout:hover {
-            background-color: rgba(141,241,155,1);
-        }
-    </style>
 {% comment %}退出登录end{% endcomment %}
    {% endif %}
 </div>

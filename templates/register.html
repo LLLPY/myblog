@@ -17,7 +17,7 @@
     <div id="formBox">
         {% comment %}验证码{% endcomment %}
         <div id="yzm"
-             style="z-index: 10; border: 1px solid #FFFFFF;background-color:rgba(66, 66, 66, .5);line-height: 30px;border-radius: 10px;   position: absolute; width: 83px; top:205px; height: 30px;font-size: 14px;right:0;color: #FFFFFF;text-align: center;">
+             style="z-index: 10; border: 1px solid #FFFFFF;background-color:rgba(66, 66, 66, .5);line-height: 30px;border-radius: 10px;   position: absolute; width: 83px; top:205px; height: 30px;font-size: 14px;right:0;color: #FFFFFF;text-align: center;cursor: pointer">
             获取验证码
         </div>
 
@@ -29,18 +29,19 @@
                                                             style="float:right;"><span
                     class="iconfont">&#xec05;</span>登录</a></h3>
             <hr style="margin-bottom: 50px;">
-            <form action="#" name="f" method="post">
+            <form action="#">
                 <div class="input_outer">
                     <span class="iconfont">&#xe684;</span>
 
                     <input name="telNum" class="text" style="color: #FFFFFF !important" type="tel"
-                           placeholder="请输入手机号码" maxlength="11" minlength="11">
+                           placeholder="请输入手机号码" maxlength="11" minlength="11" required>
                 </div>
 
                 <div class="input_outer">
                     <span class="iconfont">&#xe619;</span>
 
-                    <input name="yzm" class="text" style="color: #FFFFFF !important" type="text"
+                    <input name="yzm" class="text" style="color: #FFFFFF !important" type="text" required maxlength="4"
+                           minlength="4"
                            placeholder="请输入验证码">
                 </div>
 
@@ -48,11 +49,16 @@
                 <div class="input_outer">
                     <span class="iconfont">&#xe728;</span>
                     <input name="logpass" class="text"
-                           style="color: #FFFFFF !important; position:absolute; z-index:100;" value=""
+                           style="color: #FFFFFF !important; position:absolute; z-index:100;" value="" required
+                           minlength="6"
                            type="password" placeholder="请输入密码(数字,字母,下划线组成)">
                 </div>
                 <div id="register-button" class="mb2"><a class="act-but submit" href="javascript:;"
-                                                         style="color: #FFFFFF;width: 100%;height: 100%;"><button type="submit" style="width: 100%;height: 100%;background-color: transparent;border: none">注册</button></a></div>
+                                                         style="color: #FFFFFF;width: 100%;height: 100%;">
+                    <button type="submit" style="width: 100%;height: 100%;background-color: transparent;border: none">
+                        注册
+                    </button>
+                </a></div>
 
             </form>
         </div>
@@ -60,57 +66,17 @@
 
     </div>
 
-  <style>
-    #myBlog-footer{
-        top:620px!important;
-    }
+    <style>
+        #myBlog-footer {
+            top: 620px !important;
+        }
     </style>
     {% include 'footer.html' %}
 
     <script>
+
+
         window.onload = function () {
-
-            {% comment %}点击获取验证码{% endcomment %}
-            var yzm = document.getElementById('yzm');
-            yzm.onclick = function () {
-                let tel = document.getElementsByName('telNum')[0];
-                let telValue = tel.value;
-                if (!/^[1][345789][0-9]{9}$/.test(telValue)) {
-                    alert('请输入正确的电话号码');
-                } else {
-                    {% comment %}请求后端发送验证码{% endcomment %}
-                    $ajax('post', '{% url "app:register" %}', {'tel': telValue}, function (msg) {
-                        let data = JSON.parse(msg);
-                        alert(data['msg']);
-                    }, function (msg) {
-                        alert('注册失败!', msg);
-                    })
-                    let timeOut = 1; //计时器60秒
-                    yzm.className = 'notclick';
-                    yzm.style.backgroundColor = 'red';
-                    let intervalDemo = setInterval(function () {
-                        timeOut -= 1;
-                        yzm.innerHTML = timeOut + '秒';
-                        if (timeOut <= 0) {
-                            yzm.innerHTML = '获取验证码';
-                            yzm.className = '';
-                            yzm.style.backgroundColor = 'rgba(66, 66, 66, .5)';
-                            clearInterval(intervalDemo);
-                        }
-
-                    }, 1000);
-
-
-                }
-
-
-            }
-
-
-            {% comment %}点击注册{% endcomment %}
-            var registerButton = document.getElementById('register-button');
-            AddEventListener(registerButton, 'click', checkForm, false);
-
             function checkForm() {
                 let tel = document.getElementsByName('telNum')[0];
                 let pwd = document.getElementsByName('logpass')[0];
@@ -120,34 +86,79 @@
                 let yzmValue = yzm.value;
                 {% comment %}检验电话号码是否合格{% endcomment %}
                 if (!/^[1][345789][0-9]{9}$/.test(telValue)) {
-                    alert('请输入正确的电话号码');
-                }
-
-                if (pwdValue.length <= 0) {
+                    alert('请输入正确的电话号码!');
+                } else if (!/^[0-9]{4}$/.test(yzmValue)) {
+                    alert('请正确填写验证码!');
                 } else if (pwdValue.length <= 6) {
                     alert('密码长度至少为6位!');
-                } else if (!(/[0-9]/.test(pwdValue) && /[a-zA-Z]/.test(pwdValue) && /_/.test(pwdValue))) {
-                    alert('密码必须由数字,字母,下划线组成!');
+                } else if (!(/[0-9]/.test(pwdValue) && /[a-zA-Z]/.test(pwdValue))) {
+                    alert('密码至少由数字,字母组成!');
                 } else {
-
                     $ajax('post', {% url 'app:register' %}, {
                         'tel': telValue,
                         'yzm': yzmValue,
                         'pwd': pwdValue
                     }, function (msg) {
-                        data = JSON.parse(msg);
+                        alert(JSON.parse(msg)['msg']);
 
-                        alert(data['msg']);
+                        {% comment %}如果注册成功就切换到登录页面{% endcomment %}
+                        if (JSON.parse(msg)['msg'] === '注册成功,可以直接登录!') {
+                            location.assign('{% url "app:login" %}');
+                        }
+
 
                     }, function (msg) {
-                        data = JSON.parse(msg);
+                        alert(JSON.parse(msg)['msg']);
 
-                        alert(data['msg']);
                     })
 
                 }
 
 
+            }
+
+            {% comment %}点击获取验证码{% endcomment %}
+            var yzm = document.getElementById('yzm');
+            yzm.onclick = function () {
+                let tel = document.getElementsByName('telNum')[0];
+                let telValue = tel.value;
+                if (!/^[1][345789][0-9]{9}$/.test(telValue)) {
+                    alert('请输入正确的电话号码!');
+                } else {
+                    {% comment %}请求后端发送验证码{% endcomment %}
+                    $ajax('post', '{% url "app:sendCode" %}', {'tel': telValue}, function (msg) {
+                        alert(JSON.parse(msg)['msg']);
+
+                        if (JSON.parse(msg)['msg'] !== '该号码已注册,可以直接登录!') {
+                            let timeOut = 60; //计时器60秒
+                            yzm.className = 'notclick';
+                            yzm.style.backgroundColor = 'red';
+                            let intervalDemo = setInterval(function () {
+                                timeOut -= 1;
+                                yzm.innerHTML = timeOut + '秒';
+                                if (timeOut <= 0) {
+                                    yzm.innerHTML = '获取验证码';
+                                    yzm.className = '';
+                                    yzm.style.backgroundColor = 'rgba(66, 66, 66, .5)';
+                                    clearInterval(intervalDemo);
+                                }
+
+                            }, 1000);
+                        }
+
+                    }, function (msg) {
+                        alert(JSON.parse(msg)['msg']);
+                    })
+
+                }
+
+            }
+            {% comment %}点击注册{% endcomment %}
+            var registerButton = document.getElementById('register-button');
+
+
+            registerButton.onclick = function () {
+                checkForm();
             }
 
 

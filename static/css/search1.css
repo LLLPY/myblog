@@ -74,7 +74,7 @@
     border: none;
     border-radius: 6px;
     background: #FFF;
-    padding: 0px;
+    padding: 0;
     outline: none;
     position: relative;
     z-index: 2;
@@ -174,14 +174,8 @@
 .search-wrapper .close::before, .search-wrapper .close::after {
     position: absolute;
     content: '';
-    /*background: #FFF;*/
     border-radius: 2px;
 }
-
-
-/*#initSpan {*/
-/*    border: 1px solid blue;*/
-/*}*/
 
 
 .search-wrapper .close::before {

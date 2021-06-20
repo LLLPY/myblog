@@ -1,0 +1,493 @@
+/*搜索结果的样式*/
+#learn-content-le .searchReault {
+    width: 850px;
+    height: 100px;
+    display: block !important;
+    margin: 30px 25px;
+    background-color: rgba(0, 0, 0, .3);
+    border-bottom: 2px solid gray;
+    -webkit-transition: all 0.3s;
+    transition: all 0.3s;
+    overflow: hidden !important; /*隐藏超出的部分*/
+
+
+}
+
+#learn-content-le .searchReault a {
+    width: 100%;
+    height: 100%;
+    display: inline-block;
+    text-decoration: none;
+    position: relative;
+    color: black;
+
+}
+
+#learn-content-le .searchReault a h3 {
+    position: absolute;
+    height: 25%;
+    width: 70%;
+}
+
+#learn-content-le .searchReault a p {
+    position: absolute;
+    text-indent: 2em;
+    top: 25px;
+    font-size: 14px;
+    height: 75%;
+    width: 100%;
+    padding: 6px;
+    line-height: 23px;
+}
+
+#learn-content-le .searchReault a span {
+    position: absolute;
+    height: 25%;
+    width: 20%;
+    right: 20px;
+    top: 0;
+    font-size: 14px;
+    color: gray;
+    text-align: center;
+    line-height: 25px;
+}
+
+#learn-content-le .searchReault a span[class=author] {
+    right: 140px;
+}
+
+#learn-content-le .searchReault:hover {
+    -webkit-animation-name: move;
+    animation-name: move;
+    -webkit-animation-duration: 1s;
+    animation-duration: 1s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/*搜索结果的样式end*/
+
+
+#learn-content {
+    width: 100%;
+    position: relative;
+    margin-top: 10px;
+    border-radius: 15px;
+    margin-bottom: 10px;
+}
+
+#learn-content-le {
+    width: 900px;
+    left: 0;
+    top: 0;
+    position: relative;
+    display: inline-block;
+    color: black;
+    background-color: rgba(255, 243, 205, 0.9);
+    border-radius: 15px;
+    min-height: 780px;
+
+}
+
+/*当前位置*/
+#nowLocation {
+    top: 0;
+    width: 100%;
+    height: 50px;
+    position: relative;
+    line-height: 50px;
+    padding-left: 20px;
+    border-bottom: 1px solid gray;
+}
+
+/*文章部分*/
+#learn-blogContent {
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+
+}
+
+#article-detail {
+    width: 100%;
+    position: relative;
+    top: 0;
+    height: 30px;
+    line-height: 30px;
+}
+
+#article-detail span {
+    font-size: 14px;
+    color: gray !important;
+    margin-left: 10px;
+}
+
+#modifyBlog {
+    position: absolute;
+    right: 10px;
+    border: 1px solid gray;
+    border-radius: 5px;
+    height: 20px;
+    line-height: 20px;
+    top: 5px;
+    font-size: 14px;
+    text-align: center;
+    width: 90px;
+    background-color: whitesmoke;
+
+}
+
+#modifyBlog a, #modifyBlog a .iconfont {
+    color: black !important;
+
+}
+
+/*文章收藏,点赞等*/
+#blog-extend {
+
+    width: 100%;
+    position: relative;
+    border-top: 1px solid gray;
+
+
+}
+
+#blog-extend #collect, #doCall {
+    top: 20px;
+    width: 100px;
+    height: 30px;
+    position: absolute;
+    border-radius: 10px;
+    text-align: center;
+    color: black;
+    line-height: 30px;
+
+}
+
+#collect .iconfont, #doCall .iconfont {
+    font-size: 20px;
+}
+
+#collect {
+    right: 350px;
+}
+
+#doCall {
+    right: 150px;
+    color: #a27b7b;
+    transition: background-color 0.5s;
+    cursor: pointer;
+}
+
+#collect, #saveRandomPenTag {
+    cursor: pointer;
+}
+
+#doCall:hover, #collect:hover, #saveRandomPenTag:hover {
+    background-color: #8fd19e;
+}
+
+
+#lastPage, #nextPage {
+    position: absolute;
+    top: 100px;
+    width: 100px;
+    text-align: center;
+    height: 30px;
+    line-height: 30px;
+    border-radius: 10px;
+}
+
+#lastPage {
+    left: 100px;
+}
+
+#nextPage {
+    right: 100px;
+}
+
+
+#learn-content-ri {
+    position: absolute;
+    left: 910px;
+    top: 50px;
+    border-radius: 15px;
+    width: 380px;
+    min-height: 800px;
+}
+
+#learn-content-ri * {
+    border-radius: 5px;
+    overflow: hidden;
+    outline: none !important;
+    border: none;
+
+}
+
+#recommend {
+    position: relative;
+    width: 100%;
+    top: 50px;
+    height: 300px;
+    border: 1px solid gray;
+    color: #FFFFFF;
+    background-color: #8fd19e;
+}
+
+
+#recommendTag, #randomPenTag {
+    position: relative;
+    height: 20px;
+    top: 50px;
+    width: 100px;
+    display: inline-block;
+    color: #FFFFFF;
+
+}
+
+#randomPenFrame {
+    width: 380px;
+    height: 250px;
+    background-color: silver;
+    position: fixed;
+    top: 600px;
+    cursor: pointer;
+}
+
+
+#randomPenTag, #saveRandomPenTag {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+}
+
+#saveRandomPenTag {
+    left: 310px;
+    border: 1px solid silver;
+    background-color: #fbdcdc;
+    font-size: 13px;
+    padding: 2px;
+}
+
+#randomPen {
+    width: 96%;
+    height: 200px;
+    border: 1px solid green;
+    position: relative;
+    top: 30px;
+    padding: 5px;
+    background-color: #fbdcdc;
+    color: deepskyblue;
+    resize: none;
+    overflow-y: auto;
+    text-indent: 2em;
+    left: 2%;
+
+}
+
+
+#recommend ul {
+    width: 100%;
+    height: 100%;
+
+}
+
+#recommend ul li {
+    width: 100%;
+    height: 20%;
+    line-height: 60px;
+    padding-left: 20px;
+    border-bottom: 1px solid gray;
+    overflow: hidden; /*隐藏超出的部分*/
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+}
+
+#recommend ul li a {
+    width: 100%;
+    color: #FFFFFF;
+}
+
+
+/*小火箭*/
+.actGotop {
+    position: fixed;
+    _position: absolute;
+    bottom: 50px;
+    right: 10px;
+    width: 120px;
+    height: 195px;
+    display: none;
+}
+
+.actGotop a, .actGotop a:link {
+    width: 150px;
+    height: 195px;
+    display: inline-block;
+    background: url('../imgs/rock.png') no-repeat;
+    _background: url('../imgs/rock2.gif') no-repeat;
+    outline: none;
+}
+
+.actGotop a:hover {
+    background: url('../imgs/rock3.gif') no-repeat;
+    outline: none;
+}
+
+/*回到顶部的小火箭end*/
+
+/*文本显示框*/
+.wangEditor-menu-container {
+    display: none !important;
+}
+
+.wangEditor-container {
+    background-color: transparent !important;
+}
+
+.collected {
+    background-color: #8fd19e;
+}
+
+.collect {
+    background-color: transparent;
+}
+
+/*文本显示框end*/
+
+/*评论*/
+
+#qq {
+    width: 600px;
+    height: 200px;
+    background: #fff;
+    margin: 50px auto 30px;
+    margin-top: 150px;
+    border-radius: 5px;
+
+}
+
+#qq p {
+    font-size: 12px;
+    color: #666;
+    font-family: "微软雅黑";
+    line-height: 45px;
+    text-indent: 20px;
+}
+
+#qq .message {
+    width: 560px;
+    height: 70px;
+    margin: 0 auto;
+    overflow: auto;
+    outline: none;
+    border: 1px solid #ddd;
+    padding: 8px;
+    box-sizing: border-box;
+    font-size: 14px;
+    color: #e77f29;
+    -webkit-background-clip: text;
+
+}
+
+#qq .But {
+    width: 560px;
+    height: 35px;
+    margin: 15px auto 0;
+    position: relative;
+    /*相对，参考对象*/
+}
+
+#qq .But img.bq {
+    float: left;
+
+}
+
+#qq .But span.submit {
+    margin: 0;
+    padding: 0;
+    width: 80px;
+    height: 30px;
+    background: #ff8140;
+    display: block;
+    float: right;
+
+    line-height: 30px;
+    border-radius: 5px;
+    cursor: pointer;
+
+    color: #fff;
+    font-size: 12px;
+    text-align: center;
+    font-family: "微软雅黑";
+}
+
+
+/*msgCon begin*/
+.msgCon {
+    width: 600px;
+    margin: 0 auto;
+    margin-bottom: 60px;
+}
+
+.msgCon .msgBox {
+    background: #fff;
+    padding: 10px;
+    box-sizing: border-box;
+    margin-top: 16px;
+    border-radius: 4px;
+}
+
+.msgCon .msgBox .headUrl {
+    width: 100%;
+    height: 60px;
+    border-bottom: 1px dotted #ddd;
+    display: flex;
+    align-items: center;
+}
+
+.msgCon .msgBox .headUrl img {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%
+}
+
+.msgCon .msgBox .headUrl div {
+    flex: 1;
+    display: flex;
+    flex-flow: column;
+    font-size: 16px;
+    margin-left: 16px;
+    -webkit-background-clip: text;
+    color: transparent;
+    background-image: linear-gradient(to top, #b224ef 0%, #7579ff 100%);
+}
+
+.msgCon .msgBox .headUrl div .time {
+    font-size: 14px;
+    margin-top: 6px;
+    -webkit-background-clip: text;
+    color: transparent;
+    background-image: linear-gradient(to right, #74ebd5 0%, #9face6 100%);
+}
+
+.msgCon .msgBox .headUrl a {
+    font-size: 14px;
+    padding: 10px;
+    color: salmon;
+    cursor: pointer;
+}
+
+.msgCon .msgBox .msgTxt {
+    font-size: 14px;
+    min-height: 40px;
+    line-height: 24px;
+    padding: 10px;
+    box-sizing: border-box;
+    word-wrap: break-word;
+    -webkit-background-clip: text;
+    color: transparent;
+    background-image: linear-gradient(to right, #778899 0%, #333 100%);
+}

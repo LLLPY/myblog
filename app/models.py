@@ -9,10 +9,13 @@ class User(AbstractUser): #模型继承自django自带的User模型 并在其基
     mobile=models.CharField(max_length=11,unique=True,blank=False) #blank=False 表示必须要填写该字段的值
 
     #头像信息 头像的保存路径static/avatar/%Y%m%d
-    avatar=models.ImageField(upload_to='static/avatar/%Y%m%d',blank=True) #blank=True 表示该字段的值可有可无
+    avatar=models.ImageField(upload_to='static/avatar/%Y%m%d',blank=True,default='static/avatar/20210602/demo.png') #blank=True 表示该字段的值可有可无
+
+    #job
+    job=models.CharField(max_length=20,default='为自己打工的人儿~')
 
     #简介
-    desc=models.CharField(max_length=200,blank=True)
+    desc=models.CharField(max_length=300,blank=True,default='这个人很懒,ta什么都没写~')
 
 
 
@@ -76,9 +79,11 @@ class Blog(models.Model):
     # 文章修改的时间
     updatedTime = models.DateTimeField(db_column='文章修改的时间')  # 自动添加auto_now=True,
 
+    #是否显示本文
+    isShow=models.BooleanField(default=True,db_column='是否显示本文')
+
     class Meta:
         db_table='博客' #修改表名
-        # ordering=('updatedTime',)
 
 
 #请求记录表

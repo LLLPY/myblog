@@ -219,3 +219,6 @@ CACHES = {
 
 # 替换系统的User 来使用我们自己定义的User
 AUTH_USER_MODEL = 'app.User'  # 子应用名.模型类名
+
+#修改上传文件的最大值
+DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800  #默认设置为50M
