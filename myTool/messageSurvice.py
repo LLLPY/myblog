@@ -6,8 +6,8 @@ from aliyunsdkcore.client import AcsClient
 from aliyunsdkcore.request import CommonRequest
 
 def returnMessageSurviceStatus(phoneNumber="13047180318",code='1234'):
-    ACCESSKEYID = 'LTAI5tKziR22m9SD9enPTLR6'
-    ACCESSSECRET = 'l6rEqIDfSNeYYRNgM3q8YZtnmxD99m'
+    ACCESSKEYID = ''
+    ACCESSSECRET = ''
     # 这三个参数即 AccessKey ID， AccessKey Secret， 地区的id，关于地区id怎么获得我会贴在文章最下方
     client = AcsClient(ACCESSKEYID, ACCESSSECRET, "cn-shanghai")
     # 下面就是一些规定的配置，复制即可
